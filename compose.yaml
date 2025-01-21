@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  ceramic:
+    image: ceramicnetwork/js-ceramic:latest
+    container_name: ceramic_node
+    ports:
+      - "7007:7007"
+    volumes:
+      - ceramic-data:/root/.ceramic
+    environment:
+      - CERAMIC_NETWORK=private
+      - NODE_ENV=production
+    command: ["daemon", "--network", "private"]
+
+volumes:
+  ceramic-data:
