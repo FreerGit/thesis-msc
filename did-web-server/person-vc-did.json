@@ -1,0 +1,30 @@
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1"
+  ],
+  "id": "uuid:49387f58-c0d9-4b14-a4f4-bc31a021d925",
+  "type": ["VerifiableCredential"],
+  "issuer": "did:key:z6Mkt7dRrxHhpGaAdT2kGkkUG8eDeq4hDniEpKGiRNQ5pzUk",
+  "issuanceDate": "2025-01-22T13:56:57Z",
+  "credentialSubject": {
+  "@context": [
+    "https://www.w3.org/ns/did/v1",
+    "https://w3id.org/security/suites/jws-2020/v1"
+  ],
+  "id": "did:web:localhost%3A8000:person",
+  "verificationMethod": [
+    {
+      "id": "did:web:localhost%3A8000:person#key1",
+      "type": "JsonWebKey2020",
+      "controller": "did:web:localhost%3A8000:person",
+      "publicKeyJwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "83F2uys23QrYAdOnu1clUWn8nzRubwmCh250Q5i1A10"
+      }
+    }
+  ],
+  "authentication": ["did:web:localhost%3A8000:person#key1"],
+  "assertionMethod": ["did:web:localhost%3A8000:person#key1"]
+}
+}

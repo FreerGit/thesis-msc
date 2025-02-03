@@ -1,0 +1,6 @@
+{
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  "type": ["VerifiablePresentation"],
+  "holder": "did:key:z6Mkt7dRrxHhpGaAdT2kGkkUG8eDeq4hDniEpKGiRNQ5pzUk",
+  "verifiableCredential": {"@context":["https://www.w3.org/2018/credentials/v1"],"id":"uuid:49387f58-c0d9-4b14-a4f4-bc31a021d925","type":["VerifiableCredential"],"credentialSubject":{"id":"did:web:localhost%3A8000:person","authentication":["did:web:localhost%3A8000:person#key1"],"assertionMethod":["did:web:localhost%3A8000:person#key1"],"@context":["https://www.w3.org/ns/did/v1","https://w3id.org/security/suites/jws-2020/v1"],"verificationMethod":[{"controller":"did:web:localhost%3A8000:person","id":"did:web:localhost%3A8000:person#key1","publicKeyJwk":{"crv":"Ed25519","kty":"OKP","x":"83F2uys23QrYAdOnu1clUWn8nzRubwmCh250Q5i1A10"},"type":"JsonWebKey2020"}]},"issuer":"did:key:z6Mkt7dRrxHhpGaAdT2kGkkUG8eDeq4hDniEpKGiRNQ5pzUk","issuanceDate":"2025-01-22T13:56:57Z","proof":{"type":"Ed25519Signature2018","proofPurpose":"assertionMethod","verificationMethod":"did:key:z6Mkt7dRrxHhpGaAdT2kGkkUG8eDeq4hDniEpKGiRNQ5pzUk#z6Mkt7dRrxHhpGaAdT2kGkkUG8eDeq4hDniEpKGiRNQ5pzUk","created":"2025-01-22T13:57:34.473984690Z","jws":"eyJhbGciOiJFZERTQSIsImNyaXQiOlsiYjY0Il0sImI2NCI6ZmFsc2V9..s-1QHJgsk_ZHdSPyRPAU84N4uQ6I6Lzw4apqO1Tza2kT7Jj7QGQiytoUmjBZMHbN56mPmCQN5BRV5ziZU9EsDA"}}
+}
