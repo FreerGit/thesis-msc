@@ -4,7 +4,7 @@
 DWS_EXTERNAL_HOSTNAME=${DWS_EXTERNAL_HOSTNAME:-"localhost"}  # Server hostname (default: localhost)
 OWNER_DID_FILE="owner.did"
 OWNER_JWK_FILE="owner.jwk"
-DID_KEY_PREFIX="person"
+DID_KEY_PREFIX="alexander"
 
 # Generate a new key pair for the DID
 generate_key_pair() {
@@ -102,6 +102,12 @@ register_did_on_server() {
   curl --fail-with-body -X POST -d @$DID_KEY_PREFIX-vp-signed.json http://${DWS_EXTERNAL_HOSTNAME}:8000/${DID_KEY_PREFIX}/did.json
 }
 
+# Cleanup function to remove temporary files
+cleanup() {
+  echo "Cleaning up temporary files..."
+  rm -f "$DID_KEY_PREFIX.jwk" "$DID_KEY_PREFIX-did.json" "$DID_KEY_PREFIX-vc-did.json" "$DID_KEY_PREFIX-vc-did-signed.json" "$DID_KEY_PREFIX-vp-proof-parameters.json" "$DID_KEY_PREFIX-vp.json" "$DID_KEY_PREFIX-vp-signed.json"
+}
+
 # Main Function
 register_new_did() {
   generate_key_pair
@@ -111,6 +117,7 @@ register_new_did() {
   create_verifiable_presentation
   sign_verifiable_presentation
   register_did_on_server
+  cleanup
   echo "DID $DID_KEY_PREFIX successfully registered!"
 }
 
