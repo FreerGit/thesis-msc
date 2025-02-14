@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DID Wallet</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 300px;
+            padding: 15px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 18px;
+        }
+        .credential {
+            text-align: left;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h2>Select Credentials</h2>
+    <div id="credentials-list">
+        <label class="credential">
+            <input type="checkbox" value="Credential 1"> Credential 1
+        </label>
+        <label class="credential">
+            <input type="checkbox" value="Credential 2"> Credential 2
+        </label>
+    </div>
+    <button id="authenticate">Authenticate</button>
+
+    <script src="popup.js"></script>
+</body>
+</html>

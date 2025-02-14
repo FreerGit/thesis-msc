@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample DID Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to DID Authentication</h1>
+    <p>Click below to authenticate using a Verifiable Presentation.</p>
+    <button id="login-button">Login with DID</button>
+
+    <script>
+        document.getElementById("login-button").addEventListener("click", () => {
+            console.log("Login button clicked!");
+            window.postMessage({ type: "DID_AUTH_REQUEST" }, "*");
+        });
+    </script>
+</body>
+</html>
