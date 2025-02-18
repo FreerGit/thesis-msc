@@ -35,3 +35,10 @@ sequenceDiagram;
     W->>W: Confirms challenge response is correct;
     W->>U: Grants or denies access;
 ```
+
+## Using chrome extension as wallet
+
+open wallet
+- if the user has not created a DID yet, do so
+- otherwise data is displayed here
+
