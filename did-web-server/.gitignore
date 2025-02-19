@@ -2,3 +2,7 @@ did_store/*
 
 *.did
 *.jwk
+
+*-vc-*
+*-vp*
+*-did.*
