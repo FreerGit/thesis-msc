@@ -7,6 +7,9 @@ module.exports = {
         index: "./src/index.tsx"
     },
     mode: "production",
+    experiments: {
+        asyncWebAssembly: true,
+    },
     module: {
         rules: [
             {

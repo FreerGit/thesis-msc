@@ -117,7 +117,7 @@ register_new_did() {
   create_verifiable_presentation
   sign_verifiable_presentation
   register_did_on_server
-  cleanup
+  # cleanup
   echo "DID $DID_KEY_PREFIX successfully registered!"
 }
 
