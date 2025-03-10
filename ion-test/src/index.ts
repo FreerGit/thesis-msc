@@ -1,4 +1,4 @@
-import { IonDid, IonKey, IonDocumentModel, JwkEs256k, IonRequest, IonPublicKeyPurpose } from '@decentralized-identity/ion-sdk';
+import { IonDid, IonKey, IonDocumentModel, JwkEs256k, IonRequest, IonPublicKeyPurpose, IonNetwork } from '@decentralized-identity/ion-sdk';
 import fetch from 'node-fetch'; // You may need to install this
 
 async function createDidIon() {
@@ -34,14 +34,6 @@ async function createDidIon() {
         updateKey: updateKeyPair[0]
     });
 
-    // Submit the request to an ION node (testnet in this case)
-    const response = await fetch('https://testnet.ion.dfinity.network/operations', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(createRequest)
-    });
 
     // Store these keys securely for future operations on this DID
     const keysToStore = {

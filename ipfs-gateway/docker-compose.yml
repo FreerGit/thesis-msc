@@ -5,7 +5,7 @@ services:
     image: ipfs/go-ipfs:latest
     container_name: ipfs-node
     ports:
-      - "5000:5000"
+      - "5001:5001"
       - "8080:8080"
     volumes:
       - ipfs-data:/data/ipfs  # To persist IPFS data
