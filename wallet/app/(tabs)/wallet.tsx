@@ -1,4 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import { Keypair } from '@solana/web3.js';
 
 const create_sol_wallet = async () => {
     const fileUri = FileSystem.documentDirectory + 'example.txt';

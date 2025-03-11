@@ -14,6 +14,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         "supportsTablet": true,
         "infoPlist": {
             "NSCameraUsageDescription": "This app uses the camera to scan QR codes",
+        },
+        "config": {
+            "usesNonExemptEncryption": false
         }
     },
     "android": {
@@ -45,6 +48,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
                 "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
                 "recordAudioAndroid": true
             }
+        ],
+        [
+            "expo-secure-store"
         ]
     ],
     "experiments": {
