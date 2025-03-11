@@ -1,45 +1,57 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import { Tabs } from "expo-router"
+import { BlurView } from "expo-blur"
+import { SymbolView } from "expo-symbols"
+import { StyleSheet } from "react-native"
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+export default function RootLayout() {
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
-    </Tabs>
-  );
+    return (
+        <Tabs
+            screenOptions={{
+                headerShown: false,
+                tabBarStyle: {
+                    position: 'absolute',
+                },
+                tabBarBackground: () => <BlurView tint="light" intensity={100} style={{ flex: 1 }} />,
+                tabBarActiveTintColor: '#fff',
+                tabBarInactiveTintColor: '#8a8a8a',
+                tabBarLabelStyle: {
+                    fontSize: 12,
+                    fontWeight: 'bold',
+                },
+            }} >
+            <Tabs.Screen name="index"
+                options={{
+                    title: 'Home',
+                    tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="house.fill" size={24} />,
+                }}
+            />
+            <Tabs.Screen name="scan"
+                options={{
+                    title: 'Scan',
+                    tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="qrcode.viewfinder" size={24} />,
+                }}
+            />
+            <Tabs.Screen name="wallet"
+                options={{
+                    title: 'Wallet',
+                    tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="wallet.bifold.fill" size={24} />,
+                }}
+            />
+            < Tabs.Screen name="profile"
+                options={{
+                    title: 'Profile',
+                    tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="person.fill" size={24} />,
+                }}
+            />
+        </ Tabs >
+    )
 }
+
+const styles = StyleSheet.create({
+
+    icon: {
+        color: '#fff',
+    }
+
+})
