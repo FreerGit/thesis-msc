@@ -33,16 +33,14 @@ export default function SolanaWalletScreen() {
         ></Button>
       </View>
 
-      {modalVisible && (
-        <ImportModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          text={text}
-          setText={setText}
-        />
-      )}
+      <ImportModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        text={text}
+        setText={setText}
+      />
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({

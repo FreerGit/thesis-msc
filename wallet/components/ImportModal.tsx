@@ -1,11 +1,10 @@
 import {
-    Modal,
     View,
     Text,
     StyleSheet,
     TextInput,
     Button,
-    TouchableWithoutFeedback
+    Modal
 } from "react-native";
 import { setWalletExists } from '../redux/walletSlice';
 import * as SecureStore from 'expo-secure-store';
@@ -30,55 +29,38 @@ export default function ImportModal({ modalVisible, setModalVisible, text, setTe
     }
 
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-        >
-            <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                <View style={styles.modalBackground}>
-                    <TouchableWithoutFeedback>
-                        <View style={styles.modalContainer}>
-                            <Text style={styles.modalTitle}>Import Solana key</Text>
-                            <TextInput
-                                placeholder="Enter your Solana key"
-                                value={text}
-                                onChangeText={setText}
-                                style={{
-                                    borderBottomWidth: 1,
-                                    color: 'black',
-                                }}
-                            />
-                            <Button
-                                title="Import"
-                                onPress={() => setSolanaKey()}
-                            />
 
-                        </View>
-                    </TouchableWithoutFeedback>
-                </View>
-            </TouchableWithoutFeedback>
-        </Modal>
+        <Modal
+            visible={modalVisible}
+            animationType="slide"
+        >
+            <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Import Solana key</Text>
+                <TextInput
+                    placeholder="Enter your Solana key"
+                    value={text}
+                    onChangeText={setText}
+                    style={{
+                        borderBottomWidth: 1,
+                        color: 'black',
+                    }}
+                />
+                <Button
+                    title="Import"
+                    onPress={() => setSolanaKey()}
+                />
+            </View>
+        </Modal >
     )
 }
 
 const styles = StyleSheet.create({
-    modalBackground: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.5)',
-    },
-
     modalContainer: {
-        width: '90%',
-        maxHeight: 200,
+        flex: 1,
         backgroundColor: 'white',
         borderRadius: 10,
         padding: 20,
-        flex: 1,
-        justifyContent: "space-between"
+        marginTop: 100,
     },
 
     modalTitle: {

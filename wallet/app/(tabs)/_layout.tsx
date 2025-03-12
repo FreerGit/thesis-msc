@@ -37,7 +37,7 @@ export default function RootLayout() {
                     tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="wallet.bifold.fill" size={24} />,
                 }}
             />
-            < Tabs.Screen name="profile"
+            <Tabs.Screen name="profile"
                 options={{
                     title: 'Profile',
                     tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="person.fill" size={24} />,

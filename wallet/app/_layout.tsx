@@ -1,8 +1,10 @@
+import "react-native-get-random-values"
 import { Stack } from "expo-router";
 import SolanaWalletScreen from "./SolanaWallet";
 import * as SecureStore from "expo-secure-store";
 import { useEffect } from "react";
 import { Provider, useDispatch, useSelector } from "react-redux";
+import { StatusBar } from "expo-status-bar";
 import { RootState, store } from "../redux/store";
 import { setWalletExists } from "../redux/walletSlice";
 
