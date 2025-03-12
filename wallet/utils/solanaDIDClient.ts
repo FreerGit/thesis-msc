@@ -1,6 +1,5 @@
 import { DidSolService, DidSolIdentifier, ExtendedCluster, DidSolDocument } from '@identity.com/sol-did-client';
 import { hexToBytes } from '@movingco/bytes-to-hex';
-import { Hex } from '@noble/ed25519';
 import { Wallet } from '@project-serum/anchor';
 import { Keypair } from '@solana/web3.js';
 

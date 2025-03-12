@@ -2,7 +2,6 @@ import { Tabs } from "expo-router"
 import { BlurView } from "expo-blur"
 import { SymbolView } from "expo-symbols"
 import { StyleSheet } from "react-native"
-import { setWalletExists } from '../../redux/walletSlice';
 
 export default function RootLayout() {
     return (

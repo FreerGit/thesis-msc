@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
 import SolanaWalletScreen from "./SolanaWallet";
 import * as SecureStore from "expo-secure-store";
 import { useEffect } from "react";
