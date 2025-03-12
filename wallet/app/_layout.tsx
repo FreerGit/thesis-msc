@@ -1,3 +1,5 @@
+import 'react-native-get-random-values';
+
 import { Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import SolanaWalletScreen from "./SolanaWallet";
