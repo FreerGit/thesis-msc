@@ -1,49 +1,43 @@
-import 'react-native-get-random-values';
-
 import { Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 import SolanaWalletScreen from "./SolanaWallet";
-import * as SecureStore from 'expo-secure-store';
-import { useState, useEffect } from "react";
+import * as SecureStore from "expo-secure-store";
+import { useEffect } from "react";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import { RootState, store } from "../redux/store";
+import { setWalletExists } from "../redux/walletSlice";
 
-export default function RootLayout() {
-  const [loading, setLoading] = useState(true);
-  const [walletExists, setWalletExists] = useState(false);
+export default function RootLayoutWrapper() {
+  return (
+    <Provider store={store}>
+      <RootLayout />
+    </Provider>
+  );
+}
+
+function RootLayout() {
+  const dispatch = useDispatch();
+  const walletExists = useSelector((state: RootState) => state.wallet.walletExists);
 
   useEffect(() => {
     const checkWallet = async () => {
       try {
-        SecureStore.getItemAsync('solanaKey').then((key) => {
-          setWalletExists(key !== null);
-        })
+        const key = await SecureStore.getItemAsync("solanaKey");
+        dispatch(setWalletExists(key !== null));
       } catch (error) {
         console.error(error);
-        setWalletExists(false);
-      } finally {
-        setLoading(false);
+        dispatch(setWalletExists(false));
       }
-    }
+    };
+
     checkWallet();
-  }
-    , []
-  )
+  }, [dispatch]);
 
-  if (loading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    )
-  }
-
-
-  return (
-    walletExists ? (
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      </Stack >
-    ) : (
-      < SolanaWalletScreen setWalletExists={setWalletExists} />
-    )
-  )
+  return walletExists ? (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
+  ) : (
+    <SolanaWalletScreen />
+  );
 }

@@ -7,7 +7,7 @@ import {
     Button,
     TouchableWithoutFeedback
 } from "react-native";
-
+import { setWalletExists } from '../redux/walletSlice';
 import * as SecureStore from 'expo-secure-store';
 
 interface ImportModalProps {
@@ -15,10 +15,9 @@ interface ImportModalProps {
     setModalVisible: (visible: boolean) => void;
     text: string;
     setText: (text: string) => void;
-    setWalletExists: (exists: boolean) => void;
 }
 
-export default function ImportModal({ modalVisible, setModalVisible, text, setText, setWalletExists }: ImportModalProps) {
+export default function ImportModal({ modalVisible, setModalVisible, text, setText }: ImportModalProps) {
 
     const setSolanaKey = async () => {
         try {

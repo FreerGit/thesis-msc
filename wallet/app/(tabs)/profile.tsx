@@ -1,15 +1,18 @@
-import { View, Text, StyleSheet } from "react-native"
+import { View, Text, StyleSheet, Button } from "react-native"
 import { useEffect, useState } from "react";
-import * as Solana from "../../utils/solanaWallet"
+import * as Solana from "../../utils/solanaWallet";
+import { setWalletExists } from '../../redux/walletSlice';
+import { useDispatch, useSelector } from "react-redux";
 
 export default function ProfileScreen() {
     const [solanaPubKey, setSolanaPubKey] = useState("");
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const getWallet = async () => {
             const { publicKey } = await Solana.fetchKeypair();
             setSolanaPubKey(publicKey ? publicKey : "")
-            console.log(publicKey)
         };
         getWallet();
     }, []);
@@ -18,7 +21,10 @@ export default function ProfileScreen() {
         <View style={styles.container}>
             <Text style={styles.text}>Profile</Text>
             <Text style={styles.publicKey}>Solana public key: {solanaPubKey}</Text>
-
+            <Button title="Remove Sol Key" onPress={async () => {
+                await Solana.deleteKeypair();
+                dispatch(setWalletExists(false));
+            }} />
         </View>
     )
 }

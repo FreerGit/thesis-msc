@@ -1,3 +1,4 @@
+import 'react-native-get-random-values';
 import { install } from "@solana/webcrypto-ed25519-polyfill";
 import { sha512 } from "@noble/hashes/sha512";
 import * as SecureStore from "expo-secure-store";
@@ -5,7 +6,6 @@ import { bytesToHex, hexToBytes } from "@movingco/bytes-to-hex";
 
 if (!globalThis.crypto?.subtle) {
   install();
-  console.log("WebCrypto Polyfill Loaded");
 }
 
 import {
@@ -15,6 +15,7 @@ import {
   Hex,
   Bytes,
 } from "@noble/ed25519";
+import { isBytes } from "@noble/hashes/utils";
 
 etc.sha512Async = async (message: Uint8Array): Promise<Uint8Array> => {
   return sha512(message);
@@ -31,14 +32,19 @@ export const generatePrivateKey = async () => {
 };
 
 export const toPublicKey = async (priv: Hex) => {
-  return await getPublicKeyAsync(priv);
+  const b = await getPublicKeyAsync(priv);
+  return bytesToHex(b);
 };
 
-export const saveKeypair = async (priv: Bytes) => {
+export const saveKeypair = async (priv: Hex) => {
   await SecureStore.setItemAsync(
     "solanaKey",
-    bytesToHex(priv)
+    isBytes(priv) ? bytesToHex(priv) : priv
   );
+}
+
+export const deleteKeypair = async () => {
+  await SecureStore.deleteItemAsync("solanaKey")
 }
 
 export const fetchKeypair = async () => {
@@ -46,7 +52,6 @@ export const fetchKeypair = async () => {
   var publicKey = null;
   if (privateKey) {
     publicKey = await toPublicKey(privateKey);
-    publicKey = bytesToHex(publicKey);
   }
 
   return { publicKey, privateKey };

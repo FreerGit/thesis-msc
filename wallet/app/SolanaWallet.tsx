@@ -2,21 +2,20 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import ImportModal from "../components/ImportModal";
 import { useState } from "react";
 import * as Solana from "../utils/solanaWallet";
+import { setWalletExists } from '../redux/walletSlice';
+import { useDispatch } from "react-redux";
 
-interface SolanaWalletScreenProps {
-  setWalletExists: (exists: boolean) => void;
-}
-
-export default function SolanaWalletScreen({
-  setWalletExists,
-}: SolanaWalletScreenProps) {
+export default function SolanaWalletScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [text, setText] = useState("");
+
+  const dispatch = useDispatch();
 
   const storeNewSolanaKey = async () => {
     const key = await Solana.generatePrivateKey();
     if (key) {
       await Solana.saveKeypair(key);
+      dispatch(setWalletExists(true))
     }
   };
 
@@ -40,7 +39,6 @@ export default function SolanaWalletScreen({
           setModalVisible={setModalVisible}
           text={text}
           setText={setText}
-          setWalletExists={setWalletExists}
         />
       )}
     </View>
