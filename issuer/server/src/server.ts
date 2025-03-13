@@ -8,14 +8,13 @@ app.use(express.json());
 
 const wss = new WebSocketServer({ noServer: true });
 
-
 // client connects, sends unique nonce
 // Wallet scans qr code to attain the nonce
 // Wallet sends http request with the data and nonce
 // Lookup in the map to find the associated connection to the nonce
 // Push the data acquired from the wallet
 const nonceToConnectionMap = new Map();
-
+// TODO: remove the entry on close (probably wont do this though lmeow)
 
 wss.on("connection", (ws) => {
     console.log("Client connected");
@@ -30,16 +29,14 @@ wss.on("connection", (ws) => {
     });
 
     ws.on("close", () => {
-        // TODO: remove the entry on close (probably wont do this though lmeow)
         nonceToConnectionMap.clear();
         console.log("Client disconnected");
     });
 });
 
 app.post('/present-did', (req, res) => {
-    const { nonce, data } = JSON.parse(req.body);
+    const { nonce, data } = req.body;
     console.log(`Received nonce via HTTP: ${nonce}`);
-
     if (nonceToConnectionMap.has(nonce)) {
         const ws = nonceToConnectionMap.get(nonce);
         ws.send(JSON.stringify({ message: "Data from server", data }))
