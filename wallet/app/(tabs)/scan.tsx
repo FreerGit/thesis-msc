@@ -11,6 +11,7 @@ export default function ScanScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState<ScanningResult | null>(null);
+    const [scanned, setScanned] = useState(false);
 
     useEffect(() => {
         if (permission?.canAskAgain || permission?.status === "undetermined") {
@@ -37,6 +38,9 @@ export default function ScanScreen() {
     }
 
     const onBarcodeScanned = (data: ScanningResult) => {
+        if (scanned) return;
+
+        setScanned(true);
         CameraView.dismissScanner();
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setModalVisible(true);
@@ -44,9 +48,13 @@ export default function ScanScreen() {
 
         const nonce = data?.data;
         if (nonce) {
-            const url = `http://20.123.83.171:8000/present-did?nonce=${nonce}`;
+            const url = `http://20.123.83.171:8000/present-did`;
 
-            axios.get(url)
+            axios.post(url, { nonce: nonce, data: {} }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
                 .then(response => {
                     console.log('Server Response:', response.data);
                 })
@@ -59,6 +67,11 @@ export default function ScanScreen() {
     const onCameraReady = async () => {
         await CameraView.launchScanner({ barcodeTypes: ["qr"], isGuidanceEnabled: false });
         CameraView.onModernBarcodeScanned(onBarcodeScanned);
+    }
+
+    const handleModalClose = () => {
+        setScanned(false);
+        setModalVisible(false);
     }
 
     return (
@@ -88,12 +101,12 @@ export default function ScanScreen() {
                         <View style={styles.buttons}>
                             <Button
                                 title="Cancel"
-                                onPress={() => setModalVisible(false)}
+                                onPress={() => handleModalClose()}
                             >
                             </Button>
                             <Button
                                 title="Save"
-                                onPress={() => setModalVisible(false)}
+                                onPress={() => handleModalClose()}
                             >
                             </Button>
                         </View>

@@ -6,10 +6,9 @@ const generateNonce = () => crypto.randomUUID();
 
 function App() {
   const nonce = generateNonce();
-  const ENDPOINT = `https://localhost:8000/present-did?nonce=${nonce}`;
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8000");
+    const socket = new WebSocket("ws://20.123.83.171:8000");
     socket.onopen = () => {
       console.log("WebSocket connected, sending nonce...");
       socket.send(JSON.stringify({ nonce }));
@@ -37,7 +36,7 @@ function App() {
     <div style={containerStyle}>
       <div style={qrContainerStyle}>
         <h1>Scan this QR Code</h1>
-        <QRCodeSVG value={ENDPOINT} size={250} level="H" fgColor="#000000" bgColor="#ffffff" />
+        <QRCodeSVG value={nonce} size={250} level="H" fgColor="#000000" bgColor="#ffffff" />
         <p>Nonce: {nonce}</p>
       </div>
     </div>
