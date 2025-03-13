@@ -12,16 +12,6 @@ export default function ScanScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState<ScanningResult | null>(null);
 
-    const url = `http://172.26.208.1:8000/present-did?nonce=${"fdasfdsfs"}`;
-
-    axios.get(url)
-        .then(response => {
-            console.log('Server Response:', response.data);
-        })
-        .catch(error => {
-            console.error('Error sending nonce:', error);
-        });
-
     useEffect(() => {
         if (permission?.canAskAgain || permission?.status === "undetermined") {
             requestPermission();
@@ -54,7 +44,7 @@ export default function ScanScreen() {
 
         const nonce = data?.data;
         if (nonce) {
-            const url = `http://172.26.216.223:8000/present-did?nonce=${nonce}`;
+            const url = `http://20.123.83.171:8000/present-did?nonce=${nonce}`;
 
             axios.get(url)
                 .then(response => {
