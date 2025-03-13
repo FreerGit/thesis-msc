@@ -40,15 +40,15 @@ export default function ProfileScreen() {
         fetchWallet();
     }, []);
 
-    useEffect(() => {
-        const fetchDid = async () => {
-            if (secretKey) {
-                const did = await resolveDid(secretKey);
-                setResolvedDid(did);
-            }
-        };
-        fetchDid();
-    }, [secretKey]);
+    // useEffect(() => {
+    //     const fetchDid = async () => {
+    //         if (secretKey) {
+    //             const did = await resolveDid(secretKey);
+    //             setResolvedDid(did);
+    //         }
+    //     };
+    //     fetchDid();
+    // }, [secretKey]);
 
     return (
         <View style={styles.container}>
@@ -68,12 +68,15 @@ const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
         padding: 20,
-        marginTop: 60,
+        backgroundColor: 'black',
+
     },
 
     header: {
         fontSize: 50,
         color: '#fff',
+        marginTop: 60,
+        backgroundColor: 'black',
     },
 
     text: {

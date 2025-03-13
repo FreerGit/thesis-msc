@@ -23,11 +23,11 @@ export const resolveDid = async (secretKey: string) => {
         const cluster: ExtendedCluster = 'devnet';
         const didSolIdentifier = DidSolIdentifier.create(keypair.publicKey, cluster);
 
-        // const wallet = new SolanaWallet(keypair);
+        const wallet = new SolanaWallet(keypair);
         // console.log('Created Solana wallet:', wallet);
 
         const service = DidSolService.build(didSolIdentifier)
-            // .withSolWallet(wallet)
+            .withSolWallet(wallet)
             .withAutomaticAlloc(keypair.publicKey);
 
         const did = await service.resolve();
