@@ -4,6 +4,7 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as Haptics from "expo-haptics"
 import React, { useEffect, useState } from 'react';
 import { BlurView } from 'expo-blur';
+import axios from 'axios';
 
 export default function ScanScreen() {
     const tabBarHeight = useBottomTabBarHeight();
@@ -11,6 +12,15 @@ export default function ScanScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState<ScanningResult | null>(null);
 
+    const url = `http://172.26.208.1:8000/present-did?nonce=${"fdasfdsfs"}`;
+
+    axios.get(url)
+        .then(response => {
+            console.log('Server Response:', response.data);
+        })
+        .catch(error => {
+            console.error('Error sending nonce:', error);
+        });
 
     useEffect(() => {
         if (permission?.canAskAgain || permission?.status === "undetermined") {
@@ -41,6 +51,19 @@ export default function ScanScreen() {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setModalVisible(true);
         setData(data);
+
+        const nonce = data?.data;
+        if (nonce) {
+            const url = `http://172.26.216.223:8000/present-did?nonce=${nonce}`;
+
+            axios.get(url)
+                .then(response => {
+                    console.log('Server Response:', response.data);
+                })
+                .catch(error => {
+                    console.error('Error sending nonce:', error);
+                });
+        }
     }
 
     const onCameraReady = async () => {
