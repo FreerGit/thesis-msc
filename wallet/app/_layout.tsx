@@ -1,4 +1,6 @@
 import "react-native-get-random-values"
+import 'react-native-reanimated'
+import 'react-native-gesture-handler'
 import { Stack } from "expo-router";
 import SolanaWalletScreen from "./SolanaWallet";
 import * as SecureStore from "expo-secure-store";

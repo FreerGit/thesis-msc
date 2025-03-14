@@ -13,7 +13,8 @@ if (!globalThis.crypto?.subtle) {
 import {
   utils,
   etc,
-  getPublicKeyAsync, Bytes
+  getPublicKeyAsync,
+  Bytes
 } from "@noble/ed25519";
 
 etc.sha512Async = async (message: Uint8Array): Promise<Uint8Array> => {
@@ -51,7 +52,6 @@ export const deleteKeypair = async () => {
 
 export const fetchKeypair = async () => {
   const privateKeyHex = await SecureStore.getItemAsync("solanaKey");
-  console.log("solanaKey (hex)", privateKeyHex);
 
   let publicKey = null;
   let privateKey = null;
@@ -61,7 +61,6 @@ export const fetchKeypair = async () => {
     publicKey = await toPublicKey(privateKey);
   }
 
-  console.log("pair", publicKey, privateKey);
   return { publicKey, privateKey };
 };
 
@@ -74,7 +73,6 @@ export const fetchAccountBalance = async (priv: Bytes) => {
     if (!publicKey) throw new Error("Public key is null");
 
     const balance = await connection.getBalance(new PublicKey(publicKey));
-    console.log("Balance:", balance);
     return balance;
   } catch (e) {
     console.error("Error fetching balance:", e);

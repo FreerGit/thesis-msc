@@ -5,61 +5,82 @@ import { setWalletExists } from '../../redux/walletSlice';
 import { useDispatch } from "react-redux";
 import { checkWallet, resolveDid } from "@/utils/walletUtils";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { Skeleton } from "moti/skeleton"
+import { MotiView } from "moti"
 
 export default function ProfileScreen() {
     const [solanaPubKey, setSolanaPubKey] = useState("");
     const [balance, setBalance] = useState<number | undefined>(undefined);
+    const [resolvedDid, setResolvedDid] = useState({});
+    const [loading, setLoading] = useState(true);
+    const tabBarHeight = useBottomTabBarHeight();
 
     const dispatch = useDispatch();
 
     useEffect(() => {
         const getWallet = async () => {
             const { publicKey } = await Solana.fetchKeypair();
-            console.log("fetch", publicKey)
             setSolanaPubKey(publicKey ? publicKey : "")
         };
         const getAccountBalance = async () => {
             const { privateKey } = await Solana.fetchKeypair();
-            if (!privateKey) throw new Error("No private key found!")
+            if (!privateKey) {
+                throw new Error("No private key found!")
+            }
             const bal = await Solana.fetchAccountBalance(privateKey);
             setBalance(bal);
         }
+        const fetchDid = async () => {
+            const key = await checkWallet();
+            if (key) {
+                const did = await resolveDid(key);
+                setResolvedDid(did);
+            }
+        }
         getAccountBalance();
         getWallet();
+        fetchDid();
     }, []);
-    const tabBarHeight = useBottomTabBarHeight();
-
-    const [resolvedDid, setResolvedDid] = useState({});
-    const [secretKey, setSecretKey] = useState('');
 
     useEffect(() => {
-        const fetchWallet = async () => {
-            const key = await checkWallet();
-            setSecretKey(key ? key : '');
-        };
-        fetchWallet();
-    }, []);
-
-    // useEffect(() => {
-    //     const fetchDid = async () => {
-    //         if (secretKey) {
-    //             const did = await resolveDid(secretKey);
-    //             setResolvedDid(did);
-    //         }
-    //     };
-    //     fetchDid();
-    // }, [secretKey]);
+        if (resolvedDid) {
+            setLoading(false);
+        }
+    }, [resolvedDid])
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Profile</Text>
-            <Text style={styles.text}>Solana public key: {solanaPubKey}</Text>
-            <Text style={styles.text}>Account balance: {balance}</Text>
-            <Button title="Remove Sol Key" onPress={async () => {
-                await Solana.deleteKeypair();
-                dispatch(setWalletExists(false));
-            }} />
-        </View>
+        <ScrollView style={styles.container}>
+            <View style={{ marginBottom: tabBarHeight + 20 }}>
+                <Text style={styles.header}>Profile</Text>
+                <Text style={styles.text}>Solana public key: {solanaPubKey}</Text>
+                <Text style={styles.text}>Account balance: {balance}</Text>
+                <Button title="Remove Sol Key" onPress={async () => {
+                    await Solana.deleteKeypair();
+                    dispatch(setWalletExists(false));
+                }} />
+                <MotiView style={{ flex: 1, gap: 5 }}>
+                    <Skeleton.Group show={Object.keys(resolvedDid).length === 0}>
+                        <Skeleton>
+                            <Text style={[styles.header, { marginTop: 0 }]}>Decentralized Identifier</Text>
+                        </Skeleton>
+                        <Skeleton width={"100%"} height={500}>
+                            <View style={styles.entryView}>
+                                {
+                                    Object.entries(resolvedDid).map(([key, value]) => {
+                                        return (
+                                            <View style={styles.entry} key={key}>
+                                                <Text style={styles.key}>{key}</Text>
+                                                <Text style={styles.value}>{JSON.stringify(value, null, 2)}</Text>
+                                            </View>
+                                        )
+                                    })
+                                }
+                            </View>
+                        </Skeleton>
+                    </Skeleton.Group>
+                </MotiView>
+            </View>
+        </ScrollView >
     )
 }
 
@@ -69,19 +90,25 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         padding: 20,
         backgroundColor: 'black',
-
     },
 
     header: {
+        marginTop: 60,
         fontSize: 50,
         color: '#fff',
-        marginTop: 60,
-        backgroundColor: 'black',
+        fontWeight: 'bold',
     },
 
     text: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+
+    entryView: {
+        flex: 1,
+        flexDirection: 'column',
+        gap: 5,
+        width: "100%",
     },
 
     documentText: {

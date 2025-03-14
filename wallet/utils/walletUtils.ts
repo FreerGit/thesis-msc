@@ -2,7 +2,6 @@ import { Keypair } from '@solana/web3.js';
 import { DidSolService, DidSolIdentifier, ExtendedCluster } from '@identity.com/sol-did-client';
 import * as SecureStore from 'expo-secure-store';
 import bs58 from 'bs58';
-import { Wallet as SolanaWallet } from '@project-serum/anchor';
 
 export const checkWallet = async (): Promise<string | null> => {
     try {

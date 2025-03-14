@@ -25,16 +25,16 @@ export default function RootLayout() {
                     tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="house.fill" size={24} />,
                 }}
             />
-            <Tabs.Screen name="scan"
-                options={{
-                    title: 'Scan',
-                    tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="qrcode.viewfinder" size={24} />,
-                }}
-            />
             <Tabs.Screen name="wallet"
                 options={{
                     title: 'Wallet',
                     tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="wallet.bifold.fill" size={24} />,
+                }}
+            />
+            <Tabs.Screen name="scan"
+                options={{
+                    title: 'Scan',
+                    tabBarIcon: ({ color }) => <SymbolView tintColor={color} name="qrcode.viewfinder" size={24} />,
                 }}
             />
             <Tabs.Screen name="profile"
