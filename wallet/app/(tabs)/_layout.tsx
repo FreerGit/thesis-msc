@@ -11,7 +11,7 @@ export default function RootLayout() {
                 tabBarStyle: {
                     position: 'absolute',
                 },
-                tabBarBackground: () => <BlurView tint="light" intensity={100} style={{ flex: 1 }} />,
+                tabBarBackground: () => <BlurView tint="dark" intensity={100} style={{ flex: 1 }} />,
                 tabBarActiveTintColor: '#fff',
                 tabBarInactiveTintColor: '#8a8a8a',
                 tabBarLabelStyle: {

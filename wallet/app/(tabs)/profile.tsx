@@ -93,7 +93,6 @@ const styles = StyleSheet.create({
     },
 
     header: {
-        marginTop: 60,
         fontSize: 50,
         color: '#fff',
         fontWeight: 'bold',

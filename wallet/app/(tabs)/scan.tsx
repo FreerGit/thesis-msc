@@ -130,7 +130,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 10,
         padding: 20,
-        marginTop: 50,
         backgroundColor: '#333'
     },
 
@@ -153,7 +152,6 @@ const styles = StyleSheet.create({
     },
 
     text: {
-        marginTop: 60,
         fontSize: 50,
         color: '#fff',
         fontWeight: 'bold',

@@ -1,17 +1,26 @@
-import { BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
-import { ScrollView, Text, Button, Modal, StyleSheet, View } from 'react-native';
-
+import { ScrollView, Text, Modal, StyleSheet, View, Animated } from 'react-native';
+import ModalHeader from './ModalHeader';
+import { PanGestureHandler, Gesture, State } from 'react-native-gesture-handler';
+import { useEffect, useState } from 'react';
 
 interface VcModalProps {
-    vc: any,
-    modalVisible: boolean,
-    closeModal: () => void,
+    vc: any;
+    modalVisible: boolean;
+    closeModal: () => void;
 }
 
 export default function VcModal({ vc, modalVisible, closeModal }: VcModalProps) {
-    const blurhash =
-        '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+    const [blurIntensity, setBlurIntensity] = useState(0);
+
+    const translateY = new Animated.Value(0);
+    const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+
+    const handleScroll = (event: any) => {
+        const scrollY = event.nativeEvent.contentOffset.y;
+        const intensity = scrollY * 100;
+        setBlurIntensity(intensity);
+    }
 
     return (
         <Modal
@@ -19,40 +28,45 @@ export default function VcModal({ vc, modalVisible, closeModal }: VcModalProps) 
             animationType="slide"
             transparent={true}
         >
-            <BlurView
-                intensity={20}
-                tint="light"
-                style={{ flex: 1 }}
+            <Animated.View
+                style={[
+                    styles.modalContainer,
+                    {
+                        flex: 1,
+                        transform: [{ translateY }]
+                    }
+                ]}
             >
-                {
-                    vc &&
-                    <ScrollView
-                        style={styles.modalContainer}
-                        contentContainerStyle={styles.modalContentContainer}
-                    >
+                <ModalHeader
+                    closeModal={closeModal}
+                    translateY={translateY}
+                    blurIntensity={blurIntensity}
+                >
+                </ModalHeader>
+                <ScrollView
+                    style={{ padding: 10 }}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                >
+                    <View style={styles.modalContentContainer}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                             <Image
                                 style={styles.image}
-                                source={vc.issuer.imgUrl}
+                                source={vc?.issuer.imgUrl}
                                 placeholder={{ blurhash }}
                                 contentFit="cover"
                                 transition={1000}
-                            ></Image>
+                            />
                             <View style={{ flex: 1, flexDirection: 'column', justifyContent: "space-between" }}>
                                 <Text style={styles.vcTitle}>
-                                    {vc.credentialSubject.title}
+                                    {vc?.credentialSubject.title}
                                 </Text>
                                 <Text style={styles.modalText}>
-                                    {vc.issuer.name}
+                                    {vc?.issuer.name}
                                 </Text>
-
                             </View>
                         </View>
-                        <Button
-                            title="Close"
-                            onPress={() => closeModal()}
-                        ></Button>
-                        {
+                        {vc &&
                             Object.entries(vc).map(([key, value], index) => {
                                 return (
                                     <Text key={index} style={styles.modalText}>
@@ -61,30 +75,27 @@ export default function VcModal({ vc, modalVisible, closeModal }: VcModalProps) 
                                         </Text>
                                         {JSON.stringify(value, null, 2)}
                                     </Text>
-                                )
+                                );
                             })
                         }
-                    </ScrollView>
-                }
-            </BlurView>
-        </Modal>
-    )
+                    </View>
+                </ScrollView>
+            </Animated.View>
+        </Modal >
+    );
 }
 
 const styles = StyleSheet.create({
     modalContainer: {
-        flex: 1,
+        backgroundColor: '#333',
         borderRadius: 10,
         marginTop: 50,
-        backgroundColor: '#333',
-        padding: 20,
     },
 
     modalContentContainer: {
-        borderRadius: 10,
-        overflow: 'hidden',
-        flexGrow: 1,
         alignItems: 'center',
+        width: '100%',
+        padding: 10,
     },
 
     modalText: {
@@ -110,4 +121,4 @@ const styles = StyleSheet.create({
         maxWidth: 100,
         borderRadius: 10,
     },
-})
+});

@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from "react-native"
 import { Image } from "expo-image"
-import { useEffect, useState } from "react";
 
 interface VcCardProps {
     vc: any,
@@ -39,6 +38,9 @@ export default function VcCard({ vc, onVcPress }: VcCardProps) {
                             {vc.credentialSubject.title}
                         </Text>
                         <Text style={styles.text}>
+                            {vc.credentialSubject.name}
+                        </Text>
+                        <Text style={styles.text}>
                             {vc.issuer.name}
                         </Text>
                     </View>
@@ -62,6 +64,13 @@ export default function VcCard({ vc, onVcPress }: VcCardProps) {
                         })}
                     </Text>
 
+                    <Text style={styles.text}>
+                        <Text style={{ fontWeight: "bold" }}>
+                            Expiry date: {" "}
+                        </Text>
+
+                    </Text>
+
                 </View>
             </View>
         </Pressable >
@@ -71,7 +80,7 @@ export default function VcCard({ vc, onVcPress }: VcCardProps) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
+        padding: 15,
         borderRadius: 10,
     },
 
@@ -95,12 +104,11 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
 
-
     image: {
         flex: 1,
-        height: 50,
-        minWidth: 50,
-        maxWidth: 50,
+        height: 60,
+        minWidth: 60,
+        maxWidth: 60,
         borderRadius: 10,
     },
 

@@ -74,6 +74,156 @@
                 "verificationMethod": "https://ipma.org/keys/789",
                 "signatureValue": "zQmL9Yx..."
             }
+        },
+        {
+            "type": "StudentIDCredential",
+            "issuer": {
+                "name": "University of Technology",
+                "url": "https://universityoftech.edu",
+                "imgUrl": "https://picsum.photos/id/315/200"
+            },
+            "credentialSubject": {
+                "id": "did:example:123456789",
+                "title": "Student Identification",
+                "name": "Jane Doe",
+                "studentID": "S123456",
+                "enrolledProgram": "Bachelor of Computer Science",
+                "validUntil": "2026-06-30"
+            },
+            "issuanceDate": "2024-03-01",
+            "expirationDate": "2026-06-30",
+            "proof": {
+                "type": "Ed25519Signature2018",
+                "created": "2024-03-01T10:15:00Z",
+                "proofPurpose": "assertionMethod",
+                "verificationMethod": "https://universityoftech.edu/keys/123",
+                "signatureValue": "zQmT7N6..."
+            }
+        },
+        {
+            "type": "VaccinationCredential",
+            "issuer": {
+                "name": "Health Department",
+                "url": "https://healthdept.gov",
+                "imgUrl": "https://picsum.photos/id/134/200"
+            },
+            "credentialSubject": {
+                "id": "did:example:987654321",
+                "title": "COVID-19 Vaccination Record",
+                "name": "John Smith",
+                "vaccineType": "Pfizer-BioNTech",
+                "dosesReceived": 2,
+                "lastDoseDate": "2024-01-15"
+            },
+            "issuanceDate": "2024-01-16",
+            "expirationDate": "2025-01-15",
+            "proof": {
+                "type": "Ed25519Signature2018",
+                "created": "2024-01-16T14:00:00Z",
+                "proofPurpose": "assertionMethod",
+                "verificationMethod": "https://healthdept.gov/keys/456",
+                "signatureValue": "zQmXyZ1..."
+            }
+        },
+        {
+            "type": "ProfessionalCertificationCredential",
+            "issuer": {
+                "name": "International Project Management Association",
+                "url": "https://ipma.org",
+                "imgUrl": "https://picsum.photos/id/74/200"
+            },
+            "credentialSubject": {
+                "id": "did:example:abcdef123",
+                "title": "Professional Certification",
+                "name": "Alice Johnson",
+                "certification": "Certified Project Manager (CPM)",
+                "issueDate": "2023-07-10",
+                "validUntil": "2028-07-10"
+            },
+            "issuanceDate": "2023-07-10",
+            "expirationDate": "2028-07-10",
+            "proof": {
+                "type": "Ed25519Signature2018",
+                "created": "2023-07-10T12:30:00Z",
+                "proofPurpose": "assertionMethod",
+                "verificationMethod": "https://ipma.org/keys/789",
+                "signatureValue": "zQmL9Yx..."
+            }
+        },
+        {
+            "type": "StudentIDCredential",
+            "issuer": {
+                "name": "University of Technology",
+                "url": "https://universityoftech.edu",
+                "imgUrl": "https://picsum.photos/id/315/200"
+            },
+            "credentialSubject": {
+                "id": "did:example:123456789",
+                "title": "Student Identification",
+                "name": "Jane Doe",
+                "studentID": "S123456",
+                "enrolledProgram": "Bachelor of Computer Science",
+                "validUntil": "2026-06-30"
+            },
+            "issuanceDate": "2024-03-01",
+            "expirationDate": "2026-06-30",
+            "proof": {
+                "type": "Ed25519Signature2018",
+                "created": "2024-03-01T10:15:00Z",
+                "proofPurpose": "assertionMethod",
+                "verificationMethod": "https://universityoftech.edu/keys/123",
+                "signatureValue": "zQmT7N6..."
+            }
+        },
+        {
+            "type": "VaccinationCredential",
+            "issuer": {
+                "name": "Health Department",
+                "url": "https://healthdept.gov",
+                "imgUrl": "https://picsum.photos/id/134/200"
+            },
+            "credentialSubject": {
+                "id": "did:example:987654321",
+                "title": "COVID-19 Vaccination Record",
+                "name": "John Smith",
+                "vaccineType": "Pfizer-BioNTech",
+                "dosesReceived": 2,
+                "lastDoseDate": "2024-01-15"
+            },
+            "issuanceDate": "2024-01-16",
+            "expirationDate": "2025-01-15",
+            "proof": {
+                "type": "Ed25519Signature2018",
+                "created": "2024-01-16T14:00:00Z",
+                "proofPurpose": "assertionMethod",
+                "verificationMethod": "https://healthdept.gov/keys/456",
+                "signatureValue": "zQmXyZ1..."
+            }
+        },
+        {
+            "type": "ProfessionalCertificationCredential",
+            "issuer": {
+                "name": "International Project Management Association",
+                "url": "https://ipma.org",
+                "imgUrl": "https://picsum.photos/id/74/200"
+            },
+            "credentialSubject": {
+                "id": "did:example:abcdef123",
+                "title": "Professional Certification",
+                "name": "Alice Johnson",
+                "certification": "Certified Project Manager (CPM)",
+                "issueDate": "2023-07-10",
+                "validUntil": "2028-07-10"
+            },
+            "issuanceDate": "2023-07-10",
+            "expirationDate": "2028-07-10",
+            "proof": {
+                "type": "Ed25519Signature2018",
+                "created": "2023-07-10T12:30:00Z",
+                "proofPurpose": "assertionMethod",
+                "verificationMethod": "https://ipma.org/keys/789",
+                "signatureValue": "zQmL9Yx..."
+            }
         }
     ]
 }

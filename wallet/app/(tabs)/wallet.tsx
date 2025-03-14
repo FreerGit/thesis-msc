@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         borderRadius: 10,
-        marginTop: 50,
         backgroundColor: '#333',
         padding: 20,
     },
@@ -95,7 +94,6 @@ const styles = StyleSheet.create({
     },
 
     text: {
-        marginTop: 60,
         fontSize: 50,
         color: '#fff',
         fontWeight: 'bold',

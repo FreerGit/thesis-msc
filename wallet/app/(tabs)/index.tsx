@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     },
 
     text: {
-        marginTop: 60,
         fontSize: 50,
         color: '#fff',
         fontWeight: 'bold',
