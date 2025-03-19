@@ -14,6 +14,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         "supportsTablet": true,
         "infoPlist": {
             "NSCameraUsageDescription": "This app uses the camera to scan QR codes",
+            "NSFaceIDUsageDescription": "This app uses Face ID to authenticate you",
         },
         "config": {
             "usesNonExemptEncryption": false
@@ -51,6 +52,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         ],
         [
             "expo-secure-store"
+        ],
+        [
+            "expo-local-authentication",
+            {
+                "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+            }
         ]
     ],
     "experiments": {

@@ -2,10 +2,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface WalletState {
     walletExists: boolean;
+    isAuthenticated: boolean;
 }
 
 const initialState: WalletState = {
     walletExists: false,
+    isAuthenticated: false,
 };
 
 const walletSlice = createSlice({
@@ -15,8 +17,11 @@ const walletSlice = createSlice({
         setWalletExists: (state, action: PayloadAction<boolean>) => {
             state.walletExists = action.payload;
         },
+        setIsAuthenticated: (state, action: PayloadAction<boolean>) => {
+            state.isAuthenticated = action.payload;
+        }
     },
 });
 
-export const { setWalletExists } = walletSlice.actions;
+export const { setWalletExists, setIsAuthenticated } = walletSlice.actions;
 export default walletSlice.reducer;

@@ -1,10 +1,13 @@
-import { StyleSheet, View, Text, Button, Modal, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Modal, Pressable } from 'react-native';
 import { CameraView, useCameraPermissions, BarcodeScanningResult, Camera, ScanningResult } from "expo-camera"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as Haptics from "expo-haptics"
 import React, { useEffect, useState } from 'react';
 import { BlurView } from 'expo-blur';
 import axios from 'axios';
+import Button from '@/components/Button';
+import { SymbolView } from 'expo-symbols';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ScanScreen() {
     const tabBarHeight = useBottomTabBarHeight();
@@ -75,45 +78,50 @@ export default function ScanScreen() {
     }
 
     return (
-        <View style={[styles.container, { paddingBottom: tabBarHeight }]}>
-            <Text style={styles.text}>Scan QR</Text>
-            <View style={styles.content}>
-                <Button
-                    title="Toggle scanning"
-                    onPress={() => onCameraReady()}
-                ></Button>
-            </View>
+        <LinearGradient colors={["#000000", "#333", "#333", "#000000"]} style={{ flex: 1 }}>
+            <View style={[styles.container, { paddingBottom: tabBarHeight }]}>
+                <Text style={styles.text}>Scan QR</Text>
+                <View style={styles.content}>
+                    <Button
+                        title="Toggle scanning"
+                        size='large'
+                        onPress={() => onCameraReady()}
+                    >
+                        <SymbolView name='qrcode.viewfinder' tintColor={"white"} size={30}></SymbolView>
+                    </Button>
+                </View>
 
-            <Modal
-                visible={modalVisible}
-                animationType="slide"
-                transparent={true}
-            >
-                <BlurView
-                    intensity={20}
-                    tint='light'
-                    style={{ flex: 1 }}
+                <Modal
+                    visible={modalVisible}
+                    animationType="slide"
+                    transparent={true}
                 >
-                    <View style={styles.modalContainer}>
-                        <Text style={{ color: "white" }}>
-                            {JSON.stringify(data, null, 2)}
-                        </Text>
-                        <View style={styles.buttons}>
-                            <Button
-                                title="Cancel"
-                                onPress={() => handleModalClose()}
-                            >
-                            </Button>
-                            <Button
-                                title="Save"
-                                onPress={() => handleModalClose()}
-                            >
-                            </Button>
+                    <BlurView
+                        intensity={20}
+                        tint='light'
+                        style={{ flex: 1 }}
+                    >
+                        <View style={styles.modalContainer}>
+                            <Text style={{ color: "white" }}>
+                                {JSON.stringify(data, null, 2)}
+                            </Text>
+                            <View style={styles.buttons}>
+                                <Button
+                                    title="Cancel"
+                                    onPress={() => handleModalClose()}
+                                >
+                                </Button>
+                                <Button
+                                    title="Save"
+                                    onPress={() => handleModalClose()}
+                                >
+                                </Button>
+                            </View>
                         </View>
-                    </View>
-                </BlurView>
-            </Modal>
-        </View >
+                    </BlurView>
+                </Modal>
+            </View >
+        </LinearGradient>
     )
 }
 
@@ -121,7 +129,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: 'black',
         gap: 10,
     },
 

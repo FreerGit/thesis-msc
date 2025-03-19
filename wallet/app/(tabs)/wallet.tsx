@@ -10,9 +10,8 @@ import { useEffect, useState } from "react";
 import * as vcs from "../../vcs.json"
 import VcCard from "@/components/VcCard";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { BlurView } from "expo-blur";
-import { set } from "@project-serum/anchor/dist/cjs/utils/features";
 import VcModal from "@/components/VcModal";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function WalletScreen() {
     const [vcList, setVcList] = useState<any[]>([]);
@@ -41,29 +40,31 @@ export default function WalletScreen() {
     }
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={{ marginBottom: tabBarHeight + 20 }}>
-                <Text style={styles.text}>Wallet</Text>
-                {
-                    vcList &&
-                    <View style={styles.cardView}>
-                        {
-                            vcList.map((vc, index) => {
-                                return (
-                                    <VcCard key={index} vc={vc} onVcPress={handleVcPress} />
-                                )
-                            })
-                        }
-                    </View>
-                }
-            </View>
+        <LinearGradient colors={["#000000", "#333", "#333", "#000000"]} style={{ flex: 1 }}>
+            <ScrollView style={styles.container}>
+                <View style={{ marginBottom: tabBarHeight + 20 }}>
+                    <Text style={styles.text}>Wallet</Text>
+                    {
+                        vcList &&
+                        <View style={styles.cardView}>
+                            {
+                                vcList.map((vc, index) => {
+                                    return (
+                                        <VcCard key={index} vc={vc} onVcPress={handleVcPress} />
+                                    )
+                                })
+                            }
+                        </View>
+                    }
+                </View>
 
-            <VcModal
-                vc={selectedVc}
-                modalVisible={modalVisible}
-                closeModal={closeModal}
-            ></VcModal>
-        </ScrollView >
+                <VcModal
+                    vc={selectedVc}
+                    modalVisible={modalVisible}
+                    closeModal={closeModal}
+                ></VcModal>
+            </ScrollView >
+        </LinearGradient>
     );
 }
 
@@ -71,7 +72,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: 'black',
     },
 
     modalContainer: {

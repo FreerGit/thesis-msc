@@ -3,6 +3,8 @@ import { ScrollView, Text, Modal, StyleSheet, View, Animated } from 'react-nativ
 import ModalHeader from './ModalHeader';
 import { PanGestureHandler, Gesture, State } from 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
+import { BlurView } from 'expo-blur';
+import { set } from '@project-serum/anchor/dist/cjs/utils/features';
 
 interface VcModalProps {
     vc: any;
@@ -12,6 +14,7 @@ interface VcModalProps {
 
 export default function VcModal({ vc, modalVisible, closeModal }: VcModalProps) {
     const [blurIntensity, setBlurIntensity] = useState(0);
+    const [backgroundBlur, setBackgroundBlur] = useState(0);
 
     const translateY = new Animated.Value(0);
     const blurhash = '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
@@ -28,59 +31,75 @@ export default function VcModal({ vc, modalVisible, closeModal }: VcModalProps) 
             animationType="slide"
             transparent={true}
         >
-            <Animated.View
-                style={[
-                    styles.modalContainer,
-                    {
-                        flex: 1,
-                        transform: [{ translateY }]
-                    }
-                ]}
+            <BlurView
+                intensity={backgroundBlur}
+                tint='dark'
+                style={{ flex: 1 }}
             >
-                <ModalHeader
-                    closeModal={closeModal}
-                    translateY={translateY}
-                    blurIntensity={blurIntensity}
-                >
-                </ModalHeader>
-                <ScrollView
-                    style={{ padding: 10 }}
-                    onScroll={handleScroll}
-                    scrollEventThrottle={16}
-                >
-                    <View style={styles.modalContentContainer}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                            <Image
-                                style={styles.image}
-                                source={vc?.issuer.imgUrl}
-                                placeholder={{ blurhash }}
-                                contentFit="cover"
-                                transition={1000}
-                            />
-                            <View style={{ flex: 1, flexDirection: 'column', justifyContent: "space-between" }}>
-                                <Text style={styles.vcTitle}>
-                                    {vc?.credentialSubject.title}
-                                </Text>
-                                <Text style={styles.modalText}>
-                                    {vc?.issuer.name}
-                                </Text>
-                            </View>
-                        </View>
-                        {vc &&
-                            Object.entries(vc).map(([key, value], index) => {
-                                return (
-                                    <Text key={index} style={styles.modalText}>
-                                        <Text style={{ fontWeight: "bold" }}>
-                                            {key}: {" "}
-                                        </Text>
-                                        {JSON.stringify(value, null, 2)}
-                                    </Text>
-                                );
-                            })
+                <Animated.View
+                    style={[
+                        styles.modalContainer,
+                        {
+                            flex: 1,
+                            transform: [{ translateY }],
                         }
-                    </View>
-                </ScrollView>
-            </Animated.View>
+                    ]}
+                >
+                    <ModalHeader
+                        closeModal={closeModal}
+                        translateY={translateY}
+                        blurIntensity={blurIntensity}
+                        setModalBackgroundBlur={setBackgroundBlur}
+                    >
+                    </ModalHeader>
+                    <ScrollView
+                        style={{ padding: 10 }}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16}
+                    >
+                        <View style={styles.modalContentContainer}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                                <Image
+                                    style={styles.image}
+                                    source={vc?.issuer.imgUrl}
+                                    placeholder={{ blurhash }}
+                                    contentFit="cover"
+                                    transition={1000}
+                                />
+                                <View style={{ flex: 1, flexDirection: 'column', justifyContent: "space-between" }}>
+                                    <Text style={styles.vcTitle}>
+                                        {vc?.credentialSubject.title}
+                                    </Text>
+                                    <Text style={styles.modalText}>
+                                        {vc?.credentialSubject.name}
+                                    </Text>
+                                    <Text style={styles.modalText}>
+                                        {vc?.issuer.name}
+                                    </Text>
+                                </View>
+                            </View>
+                            {vc &&
+                                <View style={styles.textBodyView}>
+                                    {Object.entries(vc).map(([key, value], index) => {
+                                        return (
+                                            <View key={index} style={styles.keyValueView}>
+                                                <Text style={styles.keyText}>
+                                                    {key}: {" "}
+                                                </Text>
+                                                <Text style={styles.modalText}>
+                                                    {JSON.stringify(value, null, 2)}
+                                                </Text>
+                                            </View>
+
+                                        );
+                                    })}
+                                </View>
+                            }
+                        </View>
+                    </ScrollView>
+                </Animated.View>
+            </BlurView>
+
         </Modal >
     );
 }
@@ -93,16 +112,35 @@ const styles = StyleSheet.create({
     },
 
     modalContentContainer: {
-        alignItems: 'center',
         width: '100%',
         padding: 10,
+        gap: 15,
+    },
+
+    textBodyView: {
+        flex: 1,
+        flexDirection: 'column',
+        gap: 5,
+    },
+
+    keyValueView: {
+        gap: 5,
+        backgroundColor: "rgba(144, 144, 144, 0.1)",
+        padding: 10,
+        borderRadius: 10,
+    },
+
+    keyText: {
+        fontSize: 16,
+        color: '#fff',
+        fontWeight: 'bold',
     },
 
     modalText: {
         flexWrap: 'wrap',
         fontSize: 16,
         color: '#fff',
-        fontWeight: 'bold',
+        // fontWeight: 'bold',
     },
 
     vcTitle: {

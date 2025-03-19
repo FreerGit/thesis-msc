@@ -1,4 +1,5 @@
 import { BlurView } from 'expo-blur';
+import { useEffect } from 'react';
 import { View, Text, StyleSheet, Button, Animated, Dimensions } from 'react-native';
 import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
@@ -6,9 +7,10 @@ interface ModalHeaderProps {
     closeModal: () => void,
     translateY: Animated.Value,
     blurIntensity: number,
+    setModalBackgroundBlur?: (intensity: number) => void,
 }
 
-export default function ModalHeader({ closeModal, translateY, blurIntensity }: ModalHeaderProps) {
+export default function ModalHeader({ closeModal, translateY, blurIntensity, setModalBackgroundBlur }: ModalHeaderProps) {
     const onGestureEvent = Animated.event(
         [{ nativeEvent: { translationY: translateY } }],
         { useNativeDriver: false }
@@ -18,7 +20,10 @@ export default function ModalHeader({ closeModal, translateY, blurIntensity }: M
 
     const onHandlerStateChange = ({ nativeEvent }: any) => {
         if (nativeEvent.state === State.END) {
-            if (nativeEvent.translationY > windowHeight / 3) {
+            if (nativeEvent.translationY >= windowHeight / 3) {
+                if (setModalBackgroundBlur) {
+                    setModalBackgroundBlur(0)
+                }
                 closeModal();
             } else {
                 Animated.spring(translateY, {
@@ -28,6 +33,13 @@ export default function ModalHeader({ closeModal, translateY, blurIntensity }: M
             }
         }
     }
+
+    translateY.addListener(({ value }) => {
+        if (setModalBackgroundBlur) {
+            const intensity = 100 - value / 5;
+            setModalBackgroundBlur(intensity);
+        }
+    });
 
     return (
         <PanGestureHandler onGestureEvent={onGestureEvent} onHandlerStateChange={onHandlerStateChange}>
@@ -73,6 +85,7 @@ const styles = StyleSheet.create({
     },
 
     closeButton: {
-        justifyContent: 'flex-end'
+        position: 'absolute',
+        right: 10,
     },
 });

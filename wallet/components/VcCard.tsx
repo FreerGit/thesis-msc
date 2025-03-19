@@ -16,9 +16,8 @@ export default function VcCard({ vc, onVcPress }: VcCardProps) {
             onPress={() => onVcPress(vc)}
             style={({ pressed }) => [
                 {
-                    backgroundColor: pressed
-                        ? 'rgb(112, 112, 112)'
-                        : '#333'
+                    opacity: pressed ? 0.5 : 1,
+                    backgroundColor: 'rgba(144, 144, 144, 0.3)'
                 },
                 styles.container
             ]}
