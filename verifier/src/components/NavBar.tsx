@@ -4,9 +4,19 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons"
+import useCart from "@/hooks/useCart"
+import { useEffect, useState } from "react"
 
 export default function NavBar() {
     const pathname = usePathname()
+    const [cartLength, setCartLength] = useState(0)
+
+    const { cart } = useCart()
+
+    useEffect(() => {
+        setCartLength(cart.length)
+    }, [cart])
+
 
     return (
         <div className="flex gap-4 items-center justify-between w-full">
@@ -39,6 +49,7 @@ export default function NavBar() {
                 href="/cart"
             >
                 <div className="flex items-center gap-1 cursor-pointer">
+                    <p className="text-white text-xl">{cartLength}</p>
                     <FontAwesomeIcon icon={faShoppingCart} />
                 </div>
             </Link>
