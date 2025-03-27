@@ -8,18 +8,55 @@ import axios from 'axios';
 import Button from '@/components/Button';
 import { SymbolView } from 'expo-symbols';
 import { LinearGradient } from 'expo-linear-gradient';
+import { fetchKeypair } from '@/utils/solanaWallet';
+
+
+
 
 export default function ScanScreen() {
+
     const tabBarHeight = useBottomTabBarHeight();
     const [permission, requestPermission] = useCameraPermissions();
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState<ScanningResult | null>(null);
-    const [scanned, setScanned] = useState(false);
+    // const [scanned, setScanned] = useState(false);
 
     useEffect(() => {
         if (permission?.canAskAgain || permission?.status === "undetermined") {
             requestPermission();
         }
+        const onBarcodeScanned = async (data: ScanningResult) => {
+            // if (scanned) return;
+
+            // setScanned(true);
+            CameraView.dismissScanner();
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            setModalVisible(true);
+            setData(data);
+            const keypair = await fetchKeypair();
+            const nonce = data?.data;
+            console.log(nonce, keypair, nonce && keypair)
+            if (nonce && keypair) {
+                const url = `http://52.158.36.185:8000/present-did`;
+
+                const did = `did:sol:devnet:${keypair.publicKey.toBase58()}`
+                axios.post(url, { nonce: nonce, did: did, data: {} }, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then(response => {
+                        console.log('Server Response:', response.data);
+                    })
+                    .catch(error => {
+                        console.error('Error sending nonce:', error);
+                    });
+            }
+
+        }
+
+        CameraView.onModernBarcodeScanned(onBarcodeScanned);
+
     }, [])
 
     if (!permission) {
@@ -40,40 +77,13 @@ export default function ScanScreen() {
         )
     }
 
-    const onBarcodeScanned = (data: ScanningResult) => {
-        if (scanned) return;
-
-        setScanned(true);
-        CameraView.dismissScanner();
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        setModalVisible(true);
-        setData(data);
-
-        const nonce = data?.data;
-        if (nonce) {
-            const url = `http://20.123.83.171:8000/present-did`;
-
-            axios.post(url, { nonce: nonce, data: {} }, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then(response => {
-                    console.log('Server Response:', response.data);
-                })
-                .catch(error => {
-                    console.error('Error sending nonce:', error);
-                });
-        }
-    }
 
     const onCameraReady = async () => {
         await CameraView.launchScanner({ barcodeTypes: ["qr"], isGuidanceEnabled: false });
-        CameraView.onModernBarcodeScanned(onBarcodeScanned);
     }
 
     const handleModalClose = () => {
-        setScanned(false);
+        // setScanned(false);
         setModalVisible(false);
     }
 

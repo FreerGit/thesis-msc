@@ -12,7 +12,7 @@ export default function SolanaWalletScreen() {
   const dispatch = useDispatch();
 
   const storeNewSolanaKey = async () => {
-    const key = await Solana.generatePrivateKey();
+    const key = await Solana.generatePrivateKeypair();
     if (key) {
       await Solana.saveKeypair(key);
       dispatch(setWalletExists(true))
