@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Item from "../types";
+import { Item } from "@prisma/client";
 
 export default function ItemCard(item: Item) {
     return (
@@ -20,7 +20,7 @@ export default function ItemCard(item: Item) {
                     <div
                         className="p-2 bg-zinc-700 rounded-md w-fit"
                     >
-                        <p className="text-4xl">${item.price}</p>
+                        <p className="text-4xl">${item.cost}</p>
                     </div>
                 </div>
             </div>
