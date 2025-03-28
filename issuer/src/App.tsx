@@ -1,15 +1,21 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
-import { createVerifiableCredential } from "vc-js";
-import * as ed from '@noble/ed25519';
-
-// const documentLoader = securityLoader().build();
+import * as vcIssuer from "@digitalbazaar/vc"
+import * as verKey from "@digitalbazaar/ed25519-verification-key-2020"
+import * as sig from "@digitalbazaar/ed25519-signature-2020"
+import jsonld from "jsonld"
+import credential from "../data/credential.json"
+import credentialExample from "../data/credentialExample.json"
+import issuerExample from "../data/issuerExample.json"
+import securitySuites from "../data/securitySuites.json"
+import jsonLd from "../data/jsonLd.json"
 
 // Function to generate a UUID (v4)
 const generateNonce = () => crypto.randomUUID();
 
-async function App() {
+
+function App() {
   const nonce = generateNonce();
 
 
@@ -25,24 +31,50 @@ async function App() {
     }
   };
 
-  const privateKey = ed.utils.randomPrivateKey(); // Generate a random private key (32 bytes)
-  const publicKey = await ed.getPublicKey(privateKey); // Get the corresponding public key
-  const suite = {
-    type: 'Ed25519Signature2018',
-    sign: async (data: Buffer) => {
-      return ed.sign(data, privateKey); // Sign the data (VC) with the private key
-    },
-    publicKey: publicKey // Include the public key
-  };
+  useEffect(() => {
+    const customContexts: Record<string, object> = {
+      "https://www.w3.org/2018/credentials/v1": credential,
+      "https://www.w3.org/2018/credentials/examples/v1": credentialExample,
+      "http://example.com/": issuerExample,
+      "https://w3id.org/security/suites/ed25519-2020/v1": securitySuites,
+      "https://www.w3.org/ns/odrl.jsonld": jsonLd
+    };
+    const customDocumentLoader = async (url: string) => {
+      if (customContexts[url]) {
+        return {
+          contextUrl: null,
+          document: customContexts[url],
+          documentUrl: url,
+        };
+      }
 
-  const signedVC = await createVerifiableCredential({
-    credential: vc,
-    suite, // Use the signature suite created above
-    documentLoader: () => {
-      return { contextUrl: null, document: vc };
+      return jsonld.documentLoaders.node()(url);
     }
-  });
-  console.log("Signed VC:", signedVC);
+    const generateKeyPair = async () => {
+      const keyPair = await verKey.Ed25519VerificationKey2020.generate();
+      keyPair.id = "did:example:issuer123#1";
+      keyPair.controller = "did:example:issuer123";
+      const suite = new sig.Ed25519Signature2020({ key: keyPair });
+      const credential = {
+        "@context": [
+          "https://www.w3.org/2018/credentials/v1",
+          "https://www.w3.org/2018/credentials/examples/v1"
+        ],
+        "type": ["VerifiableCredential", "AlumniCredential"],
+        "issuer": "http://example.com/",
+        "issuanceDate": "2010-01-01T19:23:24Z",
+        "credentialSubject": {
+          "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+          "alumniOf": "Example University"
+        }
+      };
+
+      const signedVC = await vcIssuer.issue({ credential, suite, documentLoader: customDocumentLoader });
+      console.log("Credential", JSON.stringify(signedVC, null, 2));
+    }
+    generateKeyPair();
+  }, [])
+
 
 
   useEffect(() => {
@@ -52,8 +84,7 @@ async function App() {
       socket.send(JSON.stringify({ nonce }));
     };
 
-    socket.onmessage = async (event) => {
-
+    socket.onmessage = (event) => {
 
       // const keyPair = await Ed25519KeyPair.generate();
 
@@ -88,7 +119,7 @@ async function App() {
   return (
     <div style={containerStyle}>
       <div style={qrContainerStyle}>
-        <h1>Scan this QR Code</h1>
+        <h1 style={{ color: "black" }}>Scan this QR Code</h1>
         <QRCodeSVG value={nonce} size={250} level="H" fgColor="#000000" bgColor="#ffffff" />
         <p>Nonce: {nonce}</p>
       </div>

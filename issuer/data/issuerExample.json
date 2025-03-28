@@ -1,0 +1,8 @@
+{
+    "@context": {
+        "id": "@id",
+        "type": "@type",
+        "AlumniCredential": "http://example.com/AlumniCredential",
+        "alumniOf": "http://example.com/alumniOf"
+    }
+}
