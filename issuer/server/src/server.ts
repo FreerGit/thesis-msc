@@ -35,7 +35,7 @@ wss.on("connection", (ws) => {
 });
 
 app.post('/present-did', (req, res) => {
-    const { nonce, data } = req.body;
+    const { nonce, did, data } = req.body;
     console.log(`Received nonce via HTTP: ${nonce}`);
     if (nonceToConnectionMap.has(nonce)) {
         const ws = nonceToConnectionMap.get(nonce);
