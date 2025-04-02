@@ -29,23 +29,23 @@ function RootLayout() {
   const isAuthenticated = useSelector((state: RootState) => state.wallet.isAuthenticated);
   const insets = useSafeAreaInsets();
 
-  const authenticateUser = async () => {
-    const hasHardware = await LocalAuthentication.hasHardwareAsync();
-    if (hasHardware) {
-      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-      if (isEnrolled) {
-        const result = await LocalAuthentication.authenticateAsync({
-          promptMessage: "Authenticate to continue",
-          fallbackLabel: "Enter your passcode"
-        });
-        if (result.success) {
-          dispatch(setIsAuthenticated(true));
-        } else {
-          dispatch(setIsAuthenticated(false));
-        }
-      }
-    }
-  }
+  // const authenticateUser = async () => {
+  //   const hasHardware = await LocalAuthentication.hasHardwareAsync();
+  //   if (hasHardware) {
+  //     const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+  //     if (isEnrolled) {
+  //       const result = await LocalAuthentication.authenticateAsync({
+  //         promptMessage: "Authenticate to continue",
+  //         fallbackLabel: "Enter your passcode"
+  //       });
+  //       if (result.success) {
+  //         dispatch(setIsAuthenticated(true));
+  //       } else {
+  //         dispatch(setIsAuthenticated(false));
+  //       }
+  //     }
+  //   }
+  // }
 
   useEffect(() => {
     const checkWallet = async () => {
@@ -68,14 +68,15 @@ function RootLayout() {
       style={{ flex: 1 }}
     >
       <GestureHandlerRootView style={{ flex: 1, paddingTop: insets.top }}>
-        {isAuthenticated ? (
-          <Stack screenOptions={{ headerShown: false, contentStyle: { flex: 1 } }}>
-            <Stack.Screen name="(tabs)" />
-          </Stack>
-        ) : (
-          <LogInScreen authenticateUser={authenticateUser} />
-        )
-        }
+        <Stack screenOptions={{ headerShown: false, contentStyle: { flex: 1 } }}>
+          <Stack.Screen name="(tabs)" />
+        </Stack>
+        {/* {isAuthenticated ? (
+    ) : (
+      authenticateUser = { authenticateUser }
+      < LogInScreen />
+    )
+    } */}
       </GestureHandlerRootView >
     </LinearGradient>
   ) : (
