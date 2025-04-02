@@ -1,87 +1,29 @@
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
-import * as vcIssuer from "@digitalbazaar/vc"
-import * as verKey from "@digitalbazaar/ed25519-verification-key-2020"
-import * as sig from "@digitalbazaar/ed25519-signature-2020"
-import jsonld from "jsonld"
-import credential from "../data/credential.json"
-import credentialExample from "../data/credentialExample.json"
-import issuerExample from "../data/issuerExample.json"
-import securitySuites from "../data/securitySuites.json"
-import jsonLd from "../data/jsonLd.json"
+
 
 // Function to generate a UUID (v4)
 const generateNonce = () => crypto.randomUUID();
 
 
-const customContexts: Record<string, object> = {
-  "https://www.w3.org/2018/credentials/v1": credential,
-  "https://www.w3.org/2018/credentials/examples/v1": credentialExample,
-  "http://example.com/": issuerExample,
-  "https://w3id.org/security/suites/ed25519-2020/v1": securitySuites,
-  "https://www.w3.org/ns/odrl.jsonld": jsonLd
-};
-const customDocumentLoader = async (url: string) => {
-  if (customContexts[url]) {
-    return {
-      contextUrl: null,
-      document: customContexts[url],
-      documentUrl: url,
-    };
-  }
-
-  return jsonld.documentLoaders.node()(url);
-}
-
-const generateVC = async (keyPair, did) => {
-  keyPair.id = "did:example:issuer123#1";
-  keyPair.controller = "did:example:issuer123";
-  const suite = new sig.Ed25519Signature2020({ key: keyPair });
-  const credential = {
-    "@context": [
-      "https://www.w3.org/2018/credentials/v1",
-      "https://www.w3.org/2018/credentials/examples/v1"
-    ],
-    "type": ["VerifiableCredential", "AlumniCredential"],
-    "issuer": "http://example.com/",
-    "issuanceDate": "2010-01-01T19:23:24Z",
-    "credentialSubject": {
-      "id": did,
-      "alumniOf": "Example University"
-    }
-  };
-
-  const signedVC = await vcIssuer.issue({ credential, suite, documentLoader: customDocumentLoader });
-  console.log("Credential", JSON.stringify(signedVC, null, 2));
-}
 
 function App() {
-  const [keypair, setKeypair] = useState(undefined);
+  // const [keypair, setKeypair] = useState(undefined);
   const nonce = generateNonce();
 
 
-  const vc = {
-    '@context': ['https://www.w3.org/2018/credentials/v1'],
-    type: ['VerifiableCredential'],
-    issuer: 'did:example:issuer123',
-    issuanceDate: new Date().toISOString(),
-    credentialSubject: {
-      id: 'did:example:john_doe',
-      name: 'John Doe',
-      email: 'john.doe@example.com'
-    }
-  };
-
-  useEffect(() => {
-
-    const generateKeyPair = async () => {
-      return await verKey.Ed25519VerificationKey2020.generate();
-    }
 
 
-    generateKeyPair().then(kp => setKeypair(kp));
-  }, [])
+  // useEffect(() => {
+
+  //   const generateKeyPair = async () => {
+  //     return await verKey.Ed25519VerificationKey2020.generate();
+  //   }
+
+
+  //   generateKeyPair().then(kp => setKeypair(kp));
+  // }, [])
 
 
 
@@ -92,14 +34,14 @@ function App() {
       socket.send(JSON.stringify({ nonce }));
     };
 
-    socket.onmessage = (event) => {
-      const { nonce, did } = JSON.parse(event.data)
-      console.log(nonce, did)
-      if (nonce && did) {
-        console.log(generateVC(keypair, did))
+    // socket.onmessage = (event) => {
+    //   const { nonce, did } = JSON.parse(event.data)
+    //   console.log(nonce, did)
+    //   if (nonce && did) {
+    //     console.log(generateVC(keypair, did))
 
-      }
-    };
+    //   }
+    // };
 
 
     socket.onerror = (error) => {
