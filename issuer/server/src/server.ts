@@ -10,22 +10,18 @@ import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
-// Get the equivalent of __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Read and parse JSON files
 const credential = JSON.parse(readFileSync(join(__dirname, "../../data/credential.json"), "utf-8"));
 const credentialExample = JSON.parse(readFileSync(join(__dirname, "../../data/credentialExample.json"), "utf-8"));
 const issuerExample = JSON.parse(readFileSync(join(__dirname, "../../data/issuerExample.json"), "utf-8"));
 const securitySuites = JSON.parse(readFileSync(join(__dirname, "../../data/securitySuites.json"), "utf-8"));
 const jsonLd = JSON.parse(readFileSync(join(__dirname, "../../data/jsonLd.json"), "utf-8"));
 
-// console.log(credentialExample, issuerExample, securitySuites, jsonLd);
 const app = express();
 
 app.use(express.json());
-// app.use(cors())
 
 const wss = new WebSocketServer({ noServer: true });
 
@@ -37,23 +33,7 @@ const wss = new WebSocketServer({ noServer: true });
 const nonceToConnectionMap = new Map();
 // TODO: remove the entry on close (probably wont do this though lmeow)
 
-const generateKeyPair = async () => {
-    return await verKey.Ed25519VerificationKey2020.generate();
-}
-
-const keypair = await generateKeyPair();
-
-// const vc = {
-//     '@context': ['https://www.w3.org/2018/credentials/v1'],
-//     type: ['VerifiableCredential'],
-//     issuer: 'did:example:issuer123',
-//     issuanceDate: new Date().toISOString(),
-//     credentialSubject: {
-//         id: 'did:example:john_doe',
-//         name: 'John Doe',
-//         email: 'john.doe@example.com'
-//     }
-// };
+const keypair = await verKey.Ed25519VerificationKey2020.generate();
 
 const customContexts: Record<string, object> = {
     "https://www.w3.org/2018/credentials/v1": credential,
@@ -93,7 +73,7 @@ const generateVC = async (keyPair, did) => {
     };
 
     const signedVC = await vcIssuer.issue({ credential, suite, documentLoader: customDocumentLoader });
-    console.log("Credential", JSON.stringify(signedVC, null, 2));
+    return signedVC;
 }
 
 
@@ -115,14 +95,14 @@ wss.on("connection", (ws) => {
     });
 });
 
-app.post('/present-did', (req, res) => {
+app.post('/present-did', async (req, res) => {
     const { nonce, did, data } = req.body;
     console.log(`Received nonce via HTTP: ${nonce}`);
     if (nonceToConnectionMap.has(nonce)) {
         const ws = nonceToConnectionMap.get(nonce);
         ws.send(JSON.stringify({ message: "Data from server", data }))
-        const vc = generateVC(keypair, did)
-        // console.log(generateVC(keypair, did))
+        const vc = await generateVC(keypair, did)
+
         res.status(200).send(JSON.stringify(vc));
     } else {
         res.status(404).send('Nonce not found!');

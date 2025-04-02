@@ -19,16 +19,13 @@ export default function ScanScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState<ScanningResult | null>(null);
-    // const [scanned, setScanned] = useState(false);
+    const [vc, setVC] = useState("");
 
     useEffect(() => {
         if (permission?.canAskAgain || permission?.status === "undetermined") {
             requestPermission();
         }
         const onBarcodeScanned = async (data: ScanningResult) => {
-            // if (scanned) return;
-
-            // setScanned(true);
             CameraView.dismissScanner();
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             setModalVisible(true);
@@ -46,6 +43,7 @@ export default function ScanScreen() {
                     },
                 })
                     .then(response => {
+                        setVC(response.data)
                         console.log('Server Response:', response.data);
                     })
                     .catch(error => {
@@ -113,7 +111,7 @@ export default function ScanScreen() {
                     >
                         <View style={styles.modalContainer}>
                             <Text style={{ color: "white" }}>
-                                {JSON.stringify(data, null, 2)}
+                                {JSON.stringify(vc)}
                             </Text>
                             <View style={styles.buttons}>
                                 <Button
