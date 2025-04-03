@@ -68,6 +68,7 @@ const generateVC = async (keyPair, did) => {
         "issuanceDate": "2010-01-01T19:23:24Z",
         "credentialSubject": {
             "id": did,
+            "title": "VC Issued by QR code",
             "alumniOf": "Example University"
         }
     };

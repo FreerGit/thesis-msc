@@ -9,7 +9,7 @@ import Button from '@/components/Button';
 import { SymbolView } from 'expo-symbols';
 import { LinearGradient } from 'expo-linear-gradient';
 import { fetchKeypair } from '@/utils/solanaWallet';
-
+import { saveVC } from '@/utils/vcFileSystem';
 
 
 
@@ -81,8 +81,13 @@ export default function ScanScreen() {
     }
 
     const handleModalClose = () => {
-        // setScanned(false);
         setModalVisible(false);
+    }
+
+    const handleSaveVC = async () => {
+        saveVC(vc, vc["credentialSubject"]["title"])
+
+        handleModalClose()
     }
 
     return (
@@ -121,7 +126,7 @@ export default function ScanScreen() {
                                 </Button>
                                 <Button
                                     title="Save"
-                                    onPress={() => handleModalClose()}
+                                    onPress={() => handleSaveVC()}
                                 >
                                 </Button>
                             </View>
