@@ -68,7 +68,6 @@ const generateVC = async (keyPair, did) => {
         "issuanceDate": "2010-01-01T19:23:24Z",
         "credentialSubject": {
             "id": did,
-            "title": "VC Issued by QR code",
             "alumniOf": "Example University"
         }
     };
@@ -103,8 +102,11 @@ app.post('/present-did', async (req, res) => {
         const ws = nonceToConnectionMap.get(nonce);
         ws.send(JSON.stringify({ message: "Data from server", data }))
         const vc = await generateVC(keypair, did)
-
-        res.status(200).send(JSON.stringify(vc));
+        const response = {
+            title: "A VC shared by QR code",
+            vc: vc,
+        };
+        res.status(200).send(JSON.stringify(response));
     } else {
         res.status(404).send('Nonce not found!');
     }
