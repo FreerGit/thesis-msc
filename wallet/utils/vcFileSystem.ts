@@ -2,9 +2,7 @@ import * as FileSystem from 'expo-file-system';
 
 export const saveVC = async (vc, filename) => {
     try {
-
         const vcDirectory = `${FileSystem.documentDirectory}vcs/`;
-        console.log(vcDirectory)
         const dirInfo = await FileSystem.getInfoAsync(vcDirectory);
 
         if (!dirInfo.exists) {
@@ -13,16 +11,13 @@ export const saveVC = async (vc, filename) => {
 
         const fileNames = await FileSystem.readDirectoryAsync(vcDirectory);
         var count = 0;
-        for (const name in fileNames) {
+        for (const name of fileNames) {
             const split = name.split("@@");
-            console.log(split)
-            if (split[0] == vc["credentialSubject"]["id"]) {
+            if (split[0] == vc["vc"]["credentialSubject"]["id"]) {
                 count += 1;
             }
         }
-        console.log(count)
         const filePath = `${vcDirectory}${filename}@@${count}.json`;
-        console.log(filePath)
         await FileSystem.writeAsStringAsync(filePath, JSON.stringify(vc));
 
         return filePath;
@@ -63,8 +58,10 @@ export const listAllVCs = async () => {
             const filePath = `${vcDirectory}${file}`;
             try {
                 const content = await FileSystem.readAsStringAsync(filePath);
+                const savedVC = JSON.parse(content);
                 results.push({
-                    vc: JSON.parse(content),
+                    title: savedVC["title"],
+                    vc: savedVC["vc"],
                     path: filePath
                 });
             } catch (err) {

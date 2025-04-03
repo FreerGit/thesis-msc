@@ -2,7 +2,7 @@ import { StyleSheet, View, Text, Modal, Pressable } from 'react-native';
 import { CameraView, useCameraPermissions, BarcodeScanningResult, Camera, ScanningResult } from "expo-camera"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as Haptics from "expo-haptics"
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BlurView } from 'expo-blur';
 import axios from 'axios';
 import Button from '@/components/Button';
@@ -19,12 +19,17 @@ export default function ScanScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState<ScanningResult | null>(null);
-    const [vc, setVC] = useState("");
+    const [vc, setVC] = useState({});
+    const hasScannerRegistered = useRef(false);
 
     useEffect(() => {
         if (permission?.canAskAgain || permission?.status === "undetermined") {
             requestPermission();
         }
+
+        if (hasScannerRegistered.current) return;
+        hasScannerRegistered.current = true;
+
         const onBarcodeScanned = async (data: ScanningResult) => {
             CameraView.dismissScanner();
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -85,7 +90,8 @@ export default function ScanScreen() {
     }
 
     const handleSaveVC = async () => {
-        saveVC(vc, vc["credentialSubject"]["title"])
+        console.log(vc)
+        saveVC(vc, vc["vc"]["credentialSubject"]["id"]);
 
         handleModalClose()
     }
