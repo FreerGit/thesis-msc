@@ -9,11 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@digitalbazaar/ed25519-signature-2020": "^5.4.0",
+    "@digitalbazaar/ed25519-verification-key-2020": "^4.2.0",
+    "@digitalbazaar/vc": "^7.1.2",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "@prisma/client": "^6.5.0",
     "autoprefixer": "^10.4.21",
+    "jsonld": "^8.3.3",
+    "jsonld-signatures": "^11.5.0",
     "next": "15.2.3",
     "prisma": "^6.5.0",
     "qrcode.react": "^4.2.0",

@@ -2,25 +2,21 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons"
 import useSWR from "swr"
+import CartIcon from "./CartIcon"
 
 export default function NavBar() {
     const pathname = usePathname()
 
-    const { data: session } = useSWR("/api/session", async (url) => {
+    const { data: session, error } = useSWR("/api/session", async (url) => {
         const response = await fetch(url)
         const data = await response.json()
         return data
     })
 
-    const { data: cartData, isValidating: cartIsValidating } = useSWR(session ? "/api/cart" : null, async (url: string | null) => {
-        if (!url) return
-        const response = await fetch(url)
-        const data = await response.json()
-        return data
-    })
+    if (error) {
+        return <p>Error</p>
+    }
 
     return (
         <div className="flex gap-4 items-center justify-between w-full">
@@ -41,22 +37,15 @@ export default function NavBar() {
                 >
                     About
                 </Link>
-                <Link
-                    href="/contact"
-                    className={pathname === "/contact" ? "underline" : ""}
-                >
-                    Contact
-                </Link>
             </div>
 
-            <Link
-                href="/cart"
-            >
-                <div className="flex items-center gap-1 cursor-pointer">
-                    {cartIsValidating && <p className="text-white text-xl">...</p>}
-                    {cartData !== null && <p className="text-white text-xl">{cartData}</p>}
-                    <FontAwesomeIcon icon={faShoppingCart} />
-                </div>
+            <CartIcon session={session}></CartIcon>
+            <Link href={session && session?.message !== "Unauthorized" ? "/profile" : "/login"}>
+                <button
+                    className="bg-blue-500 hover:bg-blue-700 cursor-pointer text-white font-bold py-2 px-4 rounded"
+                >
+                    Profile
+                </button>
             </Link>
         </div >
     )

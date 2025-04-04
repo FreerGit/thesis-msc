@@ -14,19 +14,21 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  did       String   @unique
+  id        String    @id @default(cuid())
+  did       String    @unique
   name      String?
   age       Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   Cart      Cart?
+  Session   Session[]
 }
 
 model Session {
   id        String   @id @default(cuid())
   userId    String
-  token     String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -63,8 +65,16 @@ model CartItem {
 }
 
 model TrustedIssuer {
-  id        String   @id @default(cuid())
-  did       String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String   @id @default(cuid())
+  did                String   @unique
+  name               String
+  publicKey          String
+  keyType            String
+  verificationMethod String
+  validFrom          DateTime
+  validTo            DateTime
+  didDocument        String
+  metadata           String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
