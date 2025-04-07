@@ -1,0 +1,67 @@
+{
+    "items": [
+        {
+            "id": 1,
+            "name": "Laptop",
+            "description": "A high-performance laptop suitable for gaming and work.",
+            "price": 1200.99,
+            "imgUrl": "https://picsum.photos/200"
+        },
+        {
+            "id": 2,
+            "name": "Wireless Mouse",
+            "description": "Ergonomic wireless mouse with adjustable DPI.",
+            "price": 25.49,
+            "imgUrl": "https://picsum.photos/200"
+        },
+        {
+            "id": 3,
+            "name": "Keyboard",
+            "description": "Mechanical keyboard with customizable RGB lighting.",
+            "price": 89.99,
+            "imgUrl": "https://picsum.photos/200"
+        },
+        {
+            "id": 4,
+            "name": "Monitor",
+            "description": "27-inch 4K UHD monitor with HDR support.",
+            "price": 349.99,
+            "imgUrl": "https://picsum.photos/200"
+        },
+        {
+            "id": 5,
+            "name": "Headphones",
+            "description": "Noise-cancelling over-ear headphones with Bluetooth connectivity.",
+            "price": 199.99,
+            "imgUrl": "https://picsum.photos/200"
+        },
+        {
+            "id": 6,
+            "name": "Webcam",
+            "description": "1080p HD webcam with built-in microphone.",
+            "price": 49.99,
+            "imgUrl": "https://picsum.photos/200"
+        },
+        {
+            "id": 7,
+            "name": "External Hard Drive",
+            "description": "1TB portable external hard drive with USB 3.0.",
+            "price": 59.99,
+            "imgUrl": "https://picsum.photos/200"
+        },
+        {
+            "id": 8,
+            "name": "Smartphone Stand",
+            "description": "Adjustable aluminum stand for smartphones and tablets.",
+            "price": 15.99,
+            "imgUrl": "https://picsum.photos/200"
+        },
+        {
+            "id": 9,
+            "name": "USB-C Hub",
+            "description": "7-in-1 USB-C hub with HDMI, USB 3.0, and SD card reader.",
+            "price": 34.99,
+            "imgUrl": "https://picsum.photos/200"
+        }
+    ]
+}
