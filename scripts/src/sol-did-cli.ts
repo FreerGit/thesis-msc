@@ -1,10 +1,13 @@
-import { DidSolService, DidSolIdentifier, ExtendedCluster } from '@identity.com/sol-did-client';
+import { DidSolService, DidSolIdentifier, ExtendedCluster, DidSolDocument } from '@identity.com/sol-did-client';
 import { Wallet } from '@project-serum/anchor';
-import { Keypair } from '@solana/web3.js';
+// import { Keypair } from '@solana/web3.js';
 import bs58 from "bs58";
 import dotenv from "dotenv";
 import fs from "fs";
 import { exit } from 'process';
+
+
+import { Keypair, SystemProgram, Transaction, TransactionInstruction, Connection, clusterApiUrl } from '@solana/web3.js';
 
 
 const createDIDClient = (keypair: Keypair): DidSolService => {
@@ -108,25 +111,82 @@ const main = async () => {
     }
 
     if (args[0] == "--set-assertion-method") {
-        const env = getDotenvFromPathArg(args, "--set-assertion-method");
-        const verf_method = await readInputJson();
+        try {
 
+            const env = getDotenvFromPathArg(args, "--set-assertion-method");
+            const verf_method = await readInputJson();
+
+            const pair = Keypair.fromSecretKey(bs58.decode(env.parsed!["PRIVATE_KEY"]));
+            const service = createDIDClient(pair);
+            const did_doc = await service.resolve();
+
+            did_doc.assertionMethod = verf_method;
+
+            if (Array.isArray(did_doc['@context'])) {
+                did_doc['@context'] = did_doc['@context']?.concat([
+                    "https://w3id.org/did/v1",
+                    "https://w3id.org/security/suites/ed25519-2018/v1",
+                ]);
+            }
+
+            console.log(did_doc)
+            const s = await service
+                .updateFromDoc(did_doc)
+                .withAutomaticAlloc(pair.publicKey)
+                .rpc();
+
+            const new_did_dic = await service.resolve();
+
+            console.log("Solana TX:", s);
+            console.log("Updated DID Document:\n", new_did_dic);
+            return;
+        } catch (e) {
+            console.log(e)
+        }
+
+    }
+
+    if (args[0] == "--kek") {
+        const env = getDotenvFromPathArg(args, "--kek");
         const pair = Keypair.fromSecretKey(bs58.decode(env.parsed!["PRIVATE_KEY"]));
         const service = createDIDClient(pair);
+
         const did_doc = await service.resolve();
 
-        did_doc.assertionMethod = verf_method;
-        const s = await service
-            .updateFromDoc(did_doc)
-            .withAutomaticAlloc(pair.publicKey)
-            .rpc();
+        if (Array.isArray(did_doc['@context'])) {
+            did_doc['@context'] = did_doc['@context']?.concat([
+                "https://w3id.org/did/v1",
+                "https://w3id.org/security/suites/ed25519-2018/v1",
+            ]);
+        }
 
-        const new_did_dic = await service.resolve();
 
-        console.log("Solana TX:", s);
-        console.log("Updated DID Document:\n", new_did_dic);
-        return;
 
+        const data = Buffer.from(JSON.stringify(did_doc));
+
+        const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+
+
+        const space = data.length; // max 1232 bytes
+        const lamports = await connection.getMinimumBalanceForRentExemption(space);
+
+        // const createAccountIx = SystemProgram.createAccount({
+        //     fromPubkey: pair.publicKey,
+        //     newAccountPubkey: pair.publicKey,
+        //     lamports,
+        //     space,
+        //     programId: SystemProgram.programId, // or your own program ID
+        // });
+
+        // Write the data (could use your own program for controlled updates)
+        const writeIx = new TransactionInstruction({
+            keys: [{ pubkey: pair.publicKey, isSigner: false, isWritable: true }],
+            programId: SystemProgram.programId,
+            data, // writing raw bytes
+        });
+
+        const tx = new Transaction().add(writeIx);
+        await connection.sendTransaction(tx, [pair]);
     }
 
     if (args[0] == "--resolve") {
