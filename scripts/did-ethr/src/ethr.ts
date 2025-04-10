@@ -2,7 +2,7 @@ import { ethers, formatEther, SigningKey, Wallet } from 'ethers'
 import { EthrDID } from 'ethr-did'
 import { getResolver } from 'ethr-did-resolver'
 import { Resolver } from 'did-resolver'
-import { createVerifiableCredentialJwt, createVerifiablePresentationJwt, verifyCredential } from 'did-jwt-vc'
+import { createVerifiableCredentialJwt, createVerifiablePresentationJwt, verifyCredential, verifyPresentation } from 'did-jwt-vc'
 import { decodeJWT } from "did-jwt";
 import * as dotenv from "dotenv";
 
@@ -99,10 +99,36 @@ async function createAndSignVC() {
         // The verification would typically be done by the verifier
         // This is just to demonstrate how it works
         // console.log('\nVerifying the credential...');
-        // const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: "sepolia", chainId: 11155111, registry }));
+        const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: "sepolia", chainId: 11155111, registry }));
 
-        // const verifiedVC = await verifyCredential(vcJwt, didResolver);
-        // console.log(verifiedVC)
+        const verifiedVC = await verifyCredential(vcJwt, didResolver);
+        console.log(verifiedVC)
+
+
+        const vpPayload = {
+            vp: {
+                '@context': ['https://www.w3.org/2018/credentials/v1'],
+                type: ['VerifiablePresentation'],
+                verifiableCredential: [vcJwt],  // wrap your signed VC JWT
+            }
+        }
+
+        const holder = {
+            did: subjectDid.did,
+            signer: subjectDid.signer!,
+            alg: 'ES256K-R'
+        }
+
+        const vpJwt = await createVerifiablePresentationJwt(vpPayload, holder)
+        console.log('\n✅ Verifiable Presentation JWT:')
+        console.log(vpJwt)
+
+        const verifiedVP = await verifyPresentation(vpJwt, didResolver, {
+            audience: did.did, // optional: who it's presented to (e.g., your backend or the original issuer)
+        })
+
+        console.log('\n✅ Verified Presentation:')
+        console.dir(verifiedVP, { depth: null })
     } catch (error) {
         console.error('Error creating or verifying VC:', error);
     }
