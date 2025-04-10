@@ -11,15 +11,14 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@digitalbazaar/ed25519-signature-2018": "^4.1.0",
-    "@digitalbazaar/ed25519-verification-key-2018": "^4.0.0",
-    "@digitalbazaar/vc": "^7.1.2",
-    "@noble/ed25519": "^2.2.3",
     "cors": "^2.8.5",
+    "did-jwt-vc": "^4.0.7",
+    "did-resolver": "^4.1.0",
     "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
+    "ethr-did": "^3.0.26",
+    "ethr-did-resolver": "^11.0.3",
     "express": "^4.21.2",
-    "jsonld": "^8.3.3",
-    "jsonld-signatures": "^11.5.0",
     "ws": "^8.18.1"
   },
   "devDependencies": {
