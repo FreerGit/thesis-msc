@@ -67,16 +67,9 @@ model CartItem {
 }
 
 model TrustedIssuer {
-  id                 String   @id @default(cuid())
-  did                String   @unique
-  name               String
-  publicKey          String
-  keyType            String
-  verificationMethod String
-  validFrom          DateTime
-  validTo            DateTime
-  didDocument        String
-  metadata           String
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
+  id        String   @id @default(cuid())
+  did       String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

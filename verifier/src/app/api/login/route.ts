@@ -1,36 +1,16 @@
 import { cookies } from "next/headers";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { verify, verifyCredential } from "@digitalbazaar/vc"
-import * as verKey from "@digitalbazaar/ed25519-verification-key-2018"
-import * as edSign from "@digitalbazaar/ed25519-signature-2018";
-import jsonld from "jsonld"
-
-import { DidSolService, DidSolIdentifier, DidSolDocument } from "@identity.com/sol-did-client"
+import { decodeJWT } from "did-jwt"
+import { getResolver } from "ethr-did-resolver"
+import { Resolver } from "did-resolver"
+// import { ethers } from 'ethers'
+import { verifyCredential } from "did-jwt-vc"
 
 const prisma = new PrismaClient();
-
-const customDocumentLoader = async (url: string) => {
-    if (url.startsWith("did:sol:")) {
-        const did = DidSolIdentifier.parse(url);
-        const service = DidSolService.build(did)
-
-        const doc = await service.resolve()
-
-        doc["@context"] = [
-            "https://w3id.org/did/v1",
-            "https://www.w3id.org/security/suites/ed25519-2018/v1"
-        ]
-
-
-        return {
-            contextUrl: null,
-            documentUrl: url,
-            document: doc
-        };
-    }
-    return jsonld.documentLoaders.node()(url);
-}
+const RPC_URL = `https://rpc.ankr.com/eth_sepolia/${process.env.ANKR_API_KEY}`
+const registry = "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818"
+// const provider = new ethers.JsonRpcProvider(RPC_URL)
 
 export async function POST(req: Request) {
     const { credential } = await req.json();
@@ -39,7 +19,13 @@ export async function POST(req: Request) {
         return NextResponse.json({ message: "Missing credential" }, { status: 400 });
     }
 
-    const issuer = credential.issuer;
+    const decoded = decodeJWT(credential);
+
+    if (!decoded) {
+        return NextResponse.json({ message: "Invalid credential" }, { status: 400 });
+    }
+
+    const issuer = decoded.payload.iss;
     if (!issuer) {
         return NextResponse.json({ message: "Missing issuer" }, { status: 400 });
     }
@@ -52,30 +38,32 @@ export async function POST(req: Request) {
         },
     });
 
-    const verificationKey = await verKey.Ed25519VerificationKey2018.from({
-        id: "did:sol:devnet:7e3bAN1vRNL7c73awhtwJpXmun5YwhCQffieGoi8vdsb#default",
-        type: "Ed25519VerificationKey2018",
-        controller: "did:sol:devnet:7e3bAN1vRNL7c73awhtwJpXmun5YwhCQffieGoi8vdsb",
-        publicKeyBase58: "7e3bAN1vRNL7c73awhtwJpXmun5YwhCQffieGoi8vdsb"
-    });
+    if (issuerData.length === 0) {
+        return NextResponse.json({ message: "Issuer not trusted" }, { status: 401 });
+    }
 
-    const suite = new edSign.Ed25519Signature2018({
-        key: verificationKey
-    });
+    const resolver = new Resolver(getResolver({
+        name: "sepolia",
+        rpcUrl: RPC_URL,
+        registry: registry,
+        chainId: process.env.CHAIN_ID
+    }));
 
-    const result = await verifyCredential({ credential, suite, documentLoader: customDocumentLoader });
+    const verification = await verifyCredential(credential, resolver)
 
-    if (!result.verified) {
+    if (!verification.verified) {
         return NextResponse.json({ message: "Invalid credential" }, { status: 401 });
     }
 
+    const userDid = decoded.payload.vc.credentialSubject.id;
+
     const user = await prisma.user.upsert({
         where: {
-            did: credential.credentialSubject.id,
+            did: userDid,
         },
         update: {},
         create: {
-            did: credential.credentialSubject.id,
+            did: userDid,
         }
     });
 
