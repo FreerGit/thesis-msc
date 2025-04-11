@@ -11,27 +11,20 @@ export default function LoginPage() {
             method: "POST",
             body: JSON.stringify({
                 credential: {
-                    "@context": ["https://www.w3.org/2018/credentials/v1",
-                        "https://www.w3.org/2018/credentials/examples/v1",
-                        "https://w3id.org/security/suites/ed25519-2020/v1"
+                    '@context': [
+                        'https://www.w3.org/2018/credentials/v1'
                     ],
-                    "credentialSubject": {
-                        "alumniOf": "Example University",
-                        "id": "did:sol:devnet:EjReiZwCkicEGBuBQsf3qaK7DSX8hio5whzhTeExYYKw"
-                    },
-                    "issuanceDate": "2010-01-01T19:23:24Z",
-                    "issuer": "http://example.com/",
-                    "proof": {
-                        "created": "2025-04-03T09:01:09Z",
-                        "proofPurpose": "assertionMethod",
-                        "proofValue": "z4NZgWc7p9K6MLqN8FGCWEsmFkWNFvZNUJxsLaoLj1Sipw69A5XQddUdtarMmboGPj5vs2JyDpJrWY1xE6dNmJL2L",
-                        "type": "Ed25519Signature2020",
-                        "verificationMethod": "did:example:issuer123#1"
-                    },
-                    "type": [
-                        "VerifiableCredential",
-                        "AlumniCredential"
-                    ]
+                    type: ['VerifiableCredential'],
+                    issuer: 'did:sol:devnet:7e3bAN1vRNL7c73awhtwJpXmun5YwhCQffieGoi8vdsb',
+                    issuanceDate: '2010-01-01T19:23:24Z',
+                    credentialSubject: { id: 'did:sol:devnet:E13rUS8is8BU2J7KYnnti4rrmZ6hFCKW6JF9F33QCKhT' },
+                    proof: {
+                        type: 'Ed25519Signature2018',
+                        created: '2025-04-08T09:13:56Z',
+                        verificationMethod: 'did:sol:devnet:7e3bAN1vRNL7c73awhtwJpXmun5YwhCQffieGoi8vdsb#default',
+                        proofPurpose: 'assertionMethod',
+                        jws: 'eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..o-PFzjPfFKlt7nAz2S2HYRkfB4I2a1bJSsetTkuQ7gCTK4XpzyXANleLrLGo843CQoWd5pU4NLVASrv67NdhCw'
+                    }
                 }
             })
         });

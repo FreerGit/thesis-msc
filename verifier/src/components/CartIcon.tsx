@@ -12,6 +12,12 @@ export default function CartIcon({ session }: { session: { message: string } }) 
         return data
     })
 
+    if (!session || session?.message === "Unauthorized") {
+        return (
+            <></>
+        )
+    }
+
     return (
         <Link
             href="/cart"

@@ -7,7 +7,15 @@ const prisma = new PrismaClient();
 export async function POST() {
     const sessionId = (await cookies()).get("sessionId")?.value;
 
-    console.log(sessionId);
+    const user = await prisma.session.findUnique({
+        where: {
+            id: sessionId,
+        },
+    });
+
+    if (!user) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
     if (!sessionId) {
         return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -19,13 +27,7 @@ export async function POST() {
         },
     });
 
-    (await cookies()).set("sessionId", "", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-        path: "/",
-        maxAge: 0
-    });
+    (await cookies()).delete("sessionId");
 
     return NextResponse.json({ message: "Successfully logged out" });
 }

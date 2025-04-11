@@ -34,16 +34,33 @@ export async function GET() {
     return NextResponse.json(cart?.cartItems);
 }
 
-const updateOrCreateCart = async (userId: string, item: Item) => {
+const updateOrCreateCart = async (userId: string, item: Item, quantity: number) => {
+    const cart = await prisma.cart.findUnique({
+        where: {
+            userId: userId,
+        },
+    });
+
     const upsertCart = await prisma.cart.upsert({
-        where: { userId: userId },
+        where: { id: cart?.id ?? "" },
         update: {
             cartItems: {
-                create: {
-                    itemId: item.id,
-                    quantity: 1,
+                upsert: {
+                    where: {
+                        cartId_itemId: {
+                            cartId: cart?.id ?? "",
+                            itemId: item.id,
+                        },
+                    },
+                    update: {
+                        quantity: quantity
+                    },
+                    create: {
+                        itemId: item.id,
+                        quantity: quantity,
+                    },
                 },
-            },
+            }
         },
         create: {
             cartItems: {
@@ -66,11 +83,28 @@ const updateOrCreateCart = async (userId: string, item: Item) => {
 }
 
 export async function POST(req: {
-    json: () => Promise<{ item: Item, quantity: number, userId: string }>;
+    json: () => Promise<{ item: Item, quantity: number }>;
 }) {
-    const { item, userId } = await req.json();
+    const { item, quantity } = await req.json();
 
-    const upsertCart = await updateOrCreateCart(userId, item);
+    const session = (await cookies()).get("sessionId")?.value;
+    if (!session) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
-    return NextResponse.json(upsertCart?.cartItems);
+    const user = await prisma.session.findUnique({
+        where: {
+            id: session,
+        },
+    });
+
+    if (!user) {
+        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    const upsertCart = await updateOrCreateCart(user?.id, item, quantity);
+
+    console.log("Cart", upsertCart);
+
+    return NextResponse.json({ "message": "Item added to cart" }, { status: 200 });
 }
