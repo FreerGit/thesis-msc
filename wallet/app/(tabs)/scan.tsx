@@ -10,7 +10,15 @@ import { SymbolView } from 'expo-symbols';
 import { LinearGradient } from 'expo-linear-gradient';
 import { fetchKeypair } from '@/utils/solanaWallet';
 import { saveVC } from '@/utils/vcFileSystem';
+import { decodeJWT } from "did-jwt";
+import { getResolver } from 'ethr-did-resolver'
+import { Resolver } from 'did-resolver'
+import { verifyCredential, verifyPresentation } from 'did-jwt-vc'
+import Constants from 'expo-constants'
 
+const chainNameOrId = "sepolia"
+const RPC_URL = `https://rpc.ankr.com/eth_sepolia/${Constants.expoConfig?.extra?.ANKR_API_KEY}`
+const registry = "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818" // the smart contract addr for registry
 
 
 export default function ScanScreen() {
@@ -47,9 +55,14 @@ export default function ScanScreen() {
                         "Content-Type": "application/json",
                     },
                 })
-                    .then(response => {
-                        setVC(response.data)
-                        console.log('Server Response:', response.data);
+                    .then(async response => {
+                        const vc = response.data.vc;
+                        setVC(decodeJWT(vc).payload)
+                        const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, chainId: chainNameOrId, registry }));
+
+                        const verifiedVC = await verifyCredential(vc, didResolver);
+                        console.log('Verified VC:', verifiedVC);
+
                     })
                     .catch(error => {
                         console.error('Error sending nonce:', error);
