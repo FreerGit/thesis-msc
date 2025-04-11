@@ -1,4 +1,14 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
+import { config } from "dotenv"
+
+const parsed = config({ path: "./.env.api" })
+
+if (!parsed) {
+    console.error("Could not read .env.api (create it, check README)");
+} else {
+    console.log("Read .env.api successfully")
+}
+
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
     ...config,
@@ -62,5 +72,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     "experiments": {
         "typedRoutes": true
-    }
+    },
+    extra: {
+        ANKR_API_KEY: process.env.ANKR_API_KEY,
+    },
 });

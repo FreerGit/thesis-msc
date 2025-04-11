@@ -10,6 +10,7 @@ import { MotiView } from "moti"
 import Button from "@/components/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { SymbolView } from "expo-symbols";
+import { fetchKeypair } from "../../utils/solanaWallet";
 
 export default function ProfileScreen() {
     const [solanaPubKey, setSolanaPubKey] = useState("");
@@ -21,27 +22,31 @@ export default function ProfileScreen() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        const getWallet = async () => {
-            const { publicKey } = await Solana.fetchKeypair();
-            setSolanaPubKey(publicKey ? publicKey : "")
-        };
-        const getAccountBalance = async () => {
-            const { privateKey } = await Solana.fetchKeypair();
-            if (!privateKey) {
-                throw new Error("No private key found!")
-            }
-            const bal = await Solana.fetchAccountBalance(privateKey);
-            setBalance(bal);
-        }
+        // const getWallet = async () => {
+        //     const { publicKey } = await Solana.fetchKeypair();
+        //     setSolanaPubKey(publicKey ? publicKey : "")
+        // };
+        // const getAccountBalance = async () => {
+        //     const { privateKey } = await Solana.fetchKeypair();
+        //     if (!privateKey) {
+        //         throw new Error("No private key found!")
+        //     }
+        //     const bal = await Solana.fetchAccountBalance(privateKey);
+        //     setBalance(bal);
+        // }
         const fetchDid = async () => {
-            const key = await checkWallet();
-            if (key) {
-                const did = await resolveDid(key);
+            const keypair = await fetchKeypair();
+            if (keypair) {
+
+                const did = await resolveDid(keypair);
                 setResolvedDid(did);
             }
         }
-        getAccountBalance();
-        getWallet();
+        // console.log("getBalance")
+        // getAccountBalance();
+        // console.log("getWallet")
+        // getWallet();
+        console.log("fetchDid")
         fetchDid();
     }, []);
 

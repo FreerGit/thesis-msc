@@ -1,22 +1,48 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+
+
 
 // Function to generate a UUID (v4)
 const generateNonce = () => crypto.randomUUID();
 
+
+
 function App() {
+  // const [keypair, setKeypair] = useState(undefined);
   const nonce = generateNonce();
 
+
+
+
+  // useEffect(() => {
+
+  //   const generateKeyPair = async () => {
+  //     return await verKey.Ed25519VerificationKey2020.generate();
+  //   }
+
+
+  //   generateKeyPair().then(kp => setKeypair(kp));
+  // }, [])
+
+
+
   useEffect(() => {
-    const socket = new WebSocket("ws://20.123.83.171:8000");
+    const socket = new WebSocket("ws://52.158.36.185:8000");
     socket.onopen = () => {
       console.log("WebSocket connected, sending nonce...");
       socket.send(JSON.stringify({ nonce }));
     };
 
-    socket.onmessage = (event) => {
-      console.log("Message from server:", event.data);
-    };
+    // socket.onmessage = (event) => {
+    //   const { nonce, did } = JSON.parse(event.data)
+    //   console.log(nonce, did)
+    //   if (nonce && did) {
+    //     console.log(generateVC(keypair, did))
+
+    //   }
+    // };
+
 
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
@@ -35,7 +61,7 @@ function App() {
   return (
     <div style={containerStyle}>
       <div style={qrContainerStyle}>
-        <h1>Scan this QR Code</h1>
+        <h1 style={{ color: "black" }}>Scan this QR Code</h1>
         <QRCodeSVG value={nonce} size={250} level="H" fgColor="#000000" bgColor="#ffffff" />
         <p>Nonce: {nonce}</p>
       </div>

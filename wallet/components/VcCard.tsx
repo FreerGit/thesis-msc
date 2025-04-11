@@ -3,10 +3,11 @@ import { Image } from "expo-image"
 
 interface VcCardProps {
     vc: any,
+    title: string,
     onVcPress: (vc: any) => void,
 }
 
-export default function VcCard({ vc, onVcPress }: VcCardProps) {
+export default function VcCard({ title, vc, onVcPress }: VcCardProps) {
     const blurhash =
         '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
@@ -34,14 +35,14 @@ export default function VcCard({ vc, onVcPress }: VcCardProps) {
 
                     <View style={{ flex: 1, flexDirection: 'column' }}>
                         <Text style={styles.vcTitle}>
-                            {vc.credentialSubject.title}
+                            {title}
                         </Text>
-                        <Text style={styles.text}>
+                        {/* <Text style={styles.text}>
                             {vc.credentialSubject.name}
-                        </Text>
-                        <Text style={styles.text}>
+                        </Text> */}
+                        {/* <Text style={styles.text}>
                             {vc.issuer.name}
-                        </Text>
+                        </Text> */}
                     </View>
                 </View>
 
@@ -50,7 +51,7 @@ export default function VcCard({ vc, onVcPress }: VcCardProps) {
                         <Text style={{ fontWeight: "bold" }}>
                             Issuer: {" "}
                         </Text>
-                        {vc.issuer.url}
+                        {vc.issuer}
                     </Text>
                     <Text style={styles.text}>
                         <Text style={{ fontWeight: "bold" }}>

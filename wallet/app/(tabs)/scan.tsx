@@ -2,24 +2,77 @@ import { StyleSheet, View, Text, Modal, Pressable } from 'react-native';
 import { CameraView, useCameraPermissions, BarcodeScanningResult, Camera, ScanningResult } from "expo-camera"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as Haptics from "expo-haptics"
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { BlurView } from 'expo-blur';
 import axios from 'axios';
 import Button from '@/components/Button';
 import { SymbolView } from 'expo-symbols';
 import { LinearGradient } from 'expo-linear-gradient';
+import { fetchKeypair } from '@/utils/solanaWallet';
+import { saveVC } from '@/utils/vcFileSystem';
+import { decodeJWT } from "did-jwt";
+import { getResolver } from 'ethr-did-resolver'
+import { Resolver } from 'did-resolver'
+import { verifyCredential, verifyPresentation } from 'did-jwt-vc'
+import Constants from 'expo-constants'
+
+const chainNameOrId = "sepolia"
+const RPC_URL = `https://rpc.ankr.com/eth_sepolia/${Constants.expoConfig?.extra?.ANKR_API_KEY}`
+const registry = "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818" // the smart contract addr for registry
+
 
 export default function ScanScreen() {
+
     const tabBarHeight = useBottomTabBarHeight();
     const [permission, requestPermission] = useCameraPermissions();
     const [modalVisible, setModalVisible] = useState(false);
     const [data, setData] = useState<ScanningResult | null>(null);
-    const [scanned, setScanned] = useState(false);
+    const [vc, setVC] = useState({});
+    const hasScannerRegistered = useRef(false);
 
     useEffect(() => {
         if (permission?.canAskAgain || permission?.status === "undetermined") {
             requestPermission();
         }
+
+        if (hasScannerRegistered.current) return;
+        hasScannerRegistered.current = true;
+
+        const onBarcodeScanned = async (data: ScanningResult) => {
+            CameraView.dismissScanner();
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            setModalVisible(true);
+            setData(data);
+            const keypair = await fetchKeypair();
+            const nonce = data?.data;
+            console.log(nonce, keypair, nonce && keypair)
+            if (nonce && keypair) {
+                const url = `http://52.158.36.185:8000/present-did`;
+
+                const did = `did:sol:devnet:${keypair.publicKey.toBase58()}`
+                axios.post(url, { nonce: nonce, did: did, data: {} }, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then(async response => {
+                        const vc = response.data.vc;
+                        setVC(decodeJWT(vc).payload)
+                        const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, chainId: chainNameOrId, registry }));
+
+                        const verifiedVC = await verifyCredential(vc, didResolver);
+                        console.log('Verified VC:', verifiedVC);
+
+                    })
+                    .catch(error => {
+                        console.error('Error sending nonce:', error);
+                    });
+            }
+
+        }
+
+        CameraView.onModernBarcodeScanned(onBarcodeScanned);
+
     }, [])
 
     if (!permission) {
@@ -40,41 +93,20 @@ export default function ScanScreen() {
         )
     }
 
-    const onBarcodeScanned = (data: ScanningResult) => {
-        if (scanned) return;
-
-        setScanned(true);
-        CameraView.dismissScanner();
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        setModalVisible(true);
-        setData(data);
-
-        const nonce = data?.data;
-        if (nonce) {
-            const url = `http://20.123.83.171:8000/present-did`;
-
-            axios.post(url, { nonce: nonce, data: {} }, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then(response => {
-                    console.log('Server Response:', response.data);
-                })
-                .catch(error => {
-                    console.error('Error sending nonce:', error);
-                });
-        }
-    }
 
     const onCameraReady = async () => {
         await CameraView.launchScanner({ barcodeTypes: ["qr"], isGuidanceEnabled: false });
-        CameraView.onModernBarcodeScanned(onBarcodeScanned);
     }
 
     const handleModalClose = () => {
-        setScanned(false);
         setModalVisible(false);
+    }
+
+    const handleSaveVC = async () => {
+        console.log(vc)
+        saveVC(vc, vc["vc"]["credentialSubject"]["id"]);
+
+        handleModalClose()
     }
 
     return (
@@ -103,7 +135,7 @@ export default function ScanScreen() {
                     >
                         <View style={styles.modalContainer}>
                             <Text style={{ color: "white" }}>
-                                {JSON.stringify(data, null, 2)}
+                                {JSON.stringify(vc)}
                             </Text>
                             <View style={styles.buttons}>
                                 <Button
@@ -113,7 +145,7 @@ export default function ScanScreen() {
                                 </Button>
                                 <Button
                                     title="Save"
-                                    onPress={() => handleModalClose()}
+                                    onPress={() => handleSaveVC()}
                                 >
                                 </Button>
                             </View>

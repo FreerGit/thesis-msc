@@ -1,16 +1,23 @@
-# Welcome to your Expo app 👋
+# Welcome to the Wallet applictaion 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
 
-1. Install dependencies
+1. Create a [ANKR API key](https://www.ankr.com/web3-api/) and insert it into a `.env.api` file in the `wallet/` folder.
+
+   An example of .env.api
+   ```bash
+      ANKR_API_KEY=<copy-n-paste-your-key>
+   ```
+
+2. Install dependencies
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Start the app
 
    ```bash
     npx expo start

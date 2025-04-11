@@ -12,9 +12,11 @@ import VcCard from "@/components/VcCard";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import VcModal from "@/components/VcModal";
 import { LinearGradient } from "expo-linear-gradient";
+import { listAllVCs } from "@/utils/vcFileSystem";
+
 
 export default function WalletScreen() {
-    const [vcList, setVcList] = useState<any[]>([]);
+    const [savedVCList, setSavedVcList] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedVc, setSelectedVc] = useState<any | null>(null);
@@ -23,7 +25,9 @@ export default function WalletScreen() {
 
     useEffect(() => {
         const getVcList = async () => {
-            setVcList(vcs.verifiableCredentials);
+            const vcs = await listAllVCs();
+            console.log(vcs);
+            setSavedVcList(vcs);
             setLoading(false);
         }
         getVcList()
@@ -45,12 +49,12 @@ export default function WalletScreen() {
                 <View style={{ marginBottom: tabBarHeight + 20 }}>
                     <Text style={styles.text}>Wallet</Text>
                     {
-                        vcList &&
+                        savedVCList &&
                         <View style={styles.cardView}>
                             {
-                                vcList.map((vc, index) => {
+                                savedVCList.map((savedVC, index) => {
                                     return (
-                                        <VcCard key={index} vc={vc} onVcPress={handleVcPress} />
+                                        <VcCard key={index} title={savedVC["title"]} vc={savedVC["vc"]} onVcPress={handleVcPress} />
                                     )
                                 })
                             }

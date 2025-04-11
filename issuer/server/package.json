@@ -1,9 +1,10 @@
 {
   "name": "server",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts"
+    "dev": "ts-node src/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -11,12 +12,18 @@
   "description": "",
   "dependencies": {
     "cors": "^2.8.5",
+    "did-jwt-vc": "^4.0.7",
+    "did-resolver": "^4.1.0",
     "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
+    "ethr-did": "^3.0.26",
+    "ethr-did-resolver": "^11.0.3",
     "express": "^4.21.2",
     "ws": "^8.18.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/node": "^22.13.17",
     "@types/ws": "^8.18.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
