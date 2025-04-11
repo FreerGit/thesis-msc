@@ -35,6 +35,6 @@ write about the ethereum blockchain
 ## TODOs
 
 [x] Issuer did created -> did:ethr:sepolia:0x9Cf4710D6D53f8E6B579e9EF766eE8E39E03E96F
-[ ] Integrate issuer did into issuer server
-[ ] recieve a issued VC into wallet
+[x] Integrate issuer did into issuer server
+[x] recieve a issued VC into wallet
 [ ] create a VP from said VC
