@@ -13,7 +13,7 @@ import { saveVC } from '@/utils/vcFileSystem';
 import { decodeJWT } from "did-jwt";
 import { getResolver } from 'ethr-did-resolver'
 import { Resolver } from 'did-resolver'
-import { verifyCredential, verifyPresentation } from 'did-jwt-vc'
+import { VC_ERROR, verifyCredential, verifyPresentation } from 'did-jwt-vc'
 import Constants from 'expo-constants'
 
 const chainNameOrId = "sepolia"
@@ -40,9 +40,9 @@ export default function ScanScreen() {
             })
                 .then(async response => {
                     const vc = response.data.vc;
-                    setVC(decodeJWT(vc).payload)
-                    const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, chainId: chainNameOrId, registry }));
-
+                    setVC(decodeJWT(vc).payload.vc)
+                    const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: chainNameOrId, chainId: 11155111, registry }));
+                    // console.log("VC", vc)
                     const verifiedVC = await verifyCredential(vc, didResolver);
                     console.log('Verified VC:', verifiedVC);
 

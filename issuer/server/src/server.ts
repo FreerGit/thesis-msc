@@ -108,11 +108,6 @@ wss.on("connection", (ws) => {
     });
 });
 
-wss.on("close", () => {
-    nonceToConnectionMap.clear();
-    console.log("Client disconnected");
-});
-
 const server = http.createServer(app);
 
 server.on('upgrade', (request, socket, head) => {
