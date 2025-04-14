@@ -43,31 +43,42 @@ export default function ScanScreen() {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             setModalVisible(true);
             setData(data);
-            const keypair = await fetchKeypair();
-            const nonce = data?.data;
-            console.log(nonce, keypair, nonce && keypair)
-            if (nonce && keypair) {
-                const url = `http://52.158.36.185:8000/present-did`;
 
-                const did = `did:sol:devnet:${keypair.publicKey.toBase58()}`
-                axios.post(url, { nonce: nonce, did: did, data: {} }, {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
-                    .then(async response => {
-                        const vc = response.data.vc;
-                        setVC(decodeJWT(vc).payload)
-                        const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, chainId: chainNameOrId, registry }));
+            const parsedData = JSON.parse(data.data);
 
-                        const verifiedVC = await verifyCredential(vc, didResolver);
-                        console.log('Verified VC:', verifiedVC);
-
-                    })
-                    .catch(error => {
-                        console.error('Error sending nonce:', error);
-                    });
+            switch (parsedData.type) {
+                case "VerifierChallenge":
+                    console.log("VerifierChallenge QR code scanned");
+                    break;
+                default:
+                    console.log("Unknown QR code scanned");
+                    break;
             }
+
+            // const nonce = data?.data;
+            // console.log(nonce, keypair, nonce && keypair)
+            // if (nonce && keypair) {
+            //     const url = `http://52.158.36.185:8000/present-did`;
+
+            //     const did = `did:sol:devnet:${keypair.publicKey.toBase58()}`
+            //     axios.post(url, { nonce: nonce, did: did, data: {} }, {
+            //         headers: {
+            //             "Content-Type": "application/json",
+            //         },
+            //     })
+            //         .then(async response => {
+            //             const vc = response.data.vc;
+            //             setVC(decodeJWT(vc).payload)
+            //             const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, chainId: chainNameOrId, registry }));
+
+            //             const verifiedVC = await verifyCredential(vc, didResolver);
+            //             console.log('Verified VC:', verifiedVC);
+
+            //         })
+            //         .catch(error => {
+            //             console.error('Error sending nonce:', error);
+            //         });
+            // }
 
         }
 
@@ -131,7 +142,7 @@ export default function ScanScreen() {
                     <BlurView
                         intensity={20}
                         tint='light'
-                        style={{ flex: 1 }}
+                        style={{ flex: 1, paddingTop: 50 }}
                     >
                         <View style={styles.modalContainer}>
                             <Text style={{ color: "white" }}>

@@ -2,9 +2,22 @@
 
 import NavBar from "@/components/NavBar";
 import { useRouter } from "next/navigation";
+import { QRCodeSVG } from "qrcode.react";
 
 export default function LoginPage() {
     const router = useRouter();
+
+
+    /*
+        This challenge will need to include the list of trusted issuers,
+        the list of either credentials trusted or @context trusted.
+        Additionally, it will need to include the list of fields inside the credentials
+        that are required to be present for the verification to be successful.
+    */
+    const challenge = {
+        "type": "VerifierChallenge",
+        "challenge": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
+    }
 
     const handleLogin = async () => {
         const response = await fetch("/api/login", {
@@ -21,7 +34,11 @@ export default function LoginPage() {
     return (
         <div className="flex flex-col items-center justify-center gap-4 p-8">
             <NavBar />
-            <h1 className="font-semibold text-3xl">Verifier</h1>
+            <h1 className="text-5xl font-bold">Sign in with a verifiable credential</h1>
+            <QRCodeSVG
+                value={JSON.stringify(challenge)}
+                size={512}
+            ></QRCodeSVG>
             <button
                 className="bg-blue-500 hover:bg-blue-700 cursor-pointer text-white font-bold py-2 px-4 rounded"
                 onClick={() => handleLogin()}
