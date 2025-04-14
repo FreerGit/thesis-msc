@@ -1,20 +1,17 @@
 import { ScrollView, Text, StyleSheet, View } from "react-native";
 import { useEffect, useState } from "react";
-import * as Solana from "../../utils/solanaWallet";
 import { setIsAuthenticated, setWalletExists } from '../../redux/walletSlice';
 import { useDispatch } from "react-redux";
-import { checkWallet, resolveDid } from "@/utils/walletUtils";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Skeleton } from "moti/skeleton"
 import { MotiView } from "moti"
 import Button from "@/components/Button";
 import { LinearGradient } from "expo-linear-gradient";
 import { SymbolView } from "expo-symbols";
-import { fetchKeypair } from "../../utils/solanaWallet";
+import { fetchKeypair, resolveDidDoc, getBalance, deleteKeypair } from "../../utils/ethWallet";
 
 export default function ProfileScreen() {
-    const [solanaPubKey, setSolanaPubKey] = useState("");
-    const [balance, setBalance] = useState<number | undefined>(undefined);
+    const [balance, setBalance] = useState<string | undefined>(undefined);
     const [resolvedDid, setResolvedDid] = useState({});
     const [loading, setLoading] = useState(true);
     const tabBarHeight = useBottomTabBarHeight();
@@ -22,32 +19,19 @@ export default function ProfileScreen() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        // const getWallet = async () => {
-        //     const { publicKey } = await Solana.fetchKeypair();
-        //     setSolanaPubKey(publicKey ? publicKey : "")
-        // };
-        // const getAccountBalance = async () => {
-        //     const { privateKey } = await Solana.fetchKeypair();
-        //     if (!privateKey) {
-        //         throw new Error("No private key found!")
-        //     }
-        //     const bal = await Solana.fetchAccountBalance(privateKey);
-        //     setBalance(bal);
-        // }
         const fetchDid = async () => {
-            const keypair = await fetchKeypair();
-            if (keypair) {
-
-                const did = await resolveDid(keypair);
-                setResolvedDid(did);
-            }
+            const did = await resolveDidDoc();
+            setResolvedDid(did!);
         }
-        // console.log("getBalance")
-        // getAccountBalance();
-        // console.log("getWallet")
-        // getWallet();
+
+        const getEthBalance = async () => {
+            const bal = await getBalance();
+            setBalance(bal.toString())
+        }
+
         console.log("fetchDid")
         fetchDid();
+        getEthBalance();
     }, []);
 
     useEffect(() => {
@@ -62,10 +46,9 @@ export default function ProfileScreen() {
                 <View style={{ marginBottom: tabBarHeight + 20, gap: 10 }}>
                     <Text style={styles.header}>Profile</Text>
                     <View style={{ flex: 1, gap: 5 }}>
-                        <Text style={styles.text}>Solana public key: {solanaPubKey}</Text>
                         <Text style={styles.text}>Account balance: {balance}</Text>
-                        <Button title="Remove Sol Key" onPress={async () => {
-                            await Solana.deleteKeypair();
+                        <Button title="Remove Ethereum Key" onPress={async () => {
+                            await deleteKeypair();
                             dispatch(setWalletExists(false));
                         }} />
                     </View>

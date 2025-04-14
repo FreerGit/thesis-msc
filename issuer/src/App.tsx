@@ -62,7 +62,7 @@ function App() {
     <div style={containerStyle}>
       <div style={qrContainerStyle}>
         <h1 style={{ color: "black" }}>Scan this QR Code</h1>
-        <QRCodeSVG value={nonce} size={250} level="H" fgColor="#000000" bgColor="#ffffff" />
+        <QRCodeSVG value={JSON.stringify({ type: "createVC", nonce: nonce })} size={250} level="H" fgColor="#000000" bgColor="#ffffff" />
         <p>Nonce: {nonce}</p>
       </div>
     </div>

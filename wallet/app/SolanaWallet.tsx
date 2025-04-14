@@ -1,20 +1,20 @@
 import { View, Text, StyleSheet, Button } from "react-native";
 import ImportModal from "../components/ImportModal";
 import { useState } from "react";
-import * as Solana from "../utils/solanaWallet";
+import * as Eth from "../utils/ethWallet";
 import { setWalletExists } from '../redux/walletSlice';
 import { useDispatch } from "react-redux";
 
-export default function SolanaWalletScreen() {
+export default function EthWalletScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [text, setText] = useState("");
 
   const dispatch = useDispatch();
 
-  const storeNewSolanaKey = async () => {
-    const key = await Solana.generatePrivateKeypair();
+  const storeNewEthKey = async () => {
+    const key = await Eth.generatePrivateKeypair();
     if (key) {
-      await Solana.saveKeypair(key);
+      await Eth.saveKeypair(key);
       dispatch(setWalletExists(true))
     }
   };
@@ -28,8 +28,8 @@ export default function SolanaWalletScreen() {
           onPress={() => setModalVisible(true)}
         ></Button>
         <Button
-          title="Create new Solana wallet"
-          onPress={() => storeNewSolanaKey()}
+          title="Create new Ethereum wallet"
+          onPress={() => storeNewEthKey()}
         ></Button>
       </View>
 

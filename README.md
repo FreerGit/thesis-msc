@@ -32,6 +32,8 @@ bring up that did:sol sucks ass, all the problems we have faced with did methods
 
 write about the ethereum blockchain
 
+Zero knowledge proofs / Selective disclosure (EU wallet has this)
+
 ## TODOs
 
 [x] Issuer did created -> did:ethr:sepolia:0x9Cf4710D6D53f8E6B579e9EF766eE8E39E03E96F
