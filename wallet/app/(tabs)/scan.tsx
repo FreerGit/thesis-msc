@@ -8,7 +8,7 @@ import axios from 'axios';
 import Button from '@/components/Button';
 import { SymbolView } from 'expo-symbols';
 import { LinearGradient } from 'expo-linear-gradient';
-import { fetchKeypair } from '@/utils/ethWallet';
+import { fetchKeypair, getEthrDID } from '@/utils/ethWallet';
 import { saveVC } from '@/utils/vcFileSystem';
 import { decodeJWT } from "did-jwt";
 import { getResolver } from 'ethr-did-resolver'
@@ -20,34 +20,6 @@ const chainNameOrId = "sepolia"
 const RPC_URL = `https://rpc.ankr.com/eth_sepolia/${Constants.expoConfig?.extra?.ANKR_API_KEY}`
 const registry = "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818" // the smart contract addr for registry
 
-// const createVC = async (nonce: string) => {
-
-//     console.log(nonce, keypair, nonce && keypair)
-//     if (nonce && keypair) {
-//         const url = `http://52.158.36.185:8000/present-did`;
-
-//         const did = `did:sol:devnet:${keypair.publicKey.toBase58()}`
-//         axios.post(url, { nonce: nonce, did: did, data: {} }, {
-//             headers: {
-//                 "Content-Type": "application/json",
-//             },
-//         })
-//             .then(async response => {
-//                 const vc = response.data.vc;
-//                 setVC(decodeJWT(vc).payload)
-//                 const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, chainId: chainNameOrId, registry }));
-
-//                 const verifiedVC = await verifyCredential(vc, didResolver);
-//                 console.log('Verified VC:', verifiedVC);
-
-//             })
-//             .catch(error => {
-//                 console.error('Error sending nonce:', error);
-//             });
-//     }
-
-// }
-
 export default function ScanScreen() {
 
     const tabBarHeight = useBottomTabBarHeight();
@@ -56,6 +28,31 @@ export default function ScanScreen() {
     const [data, setData] = useState<ScanningResult | null>(null);
     const [vc, setVC] = useState({});
     const hasScannerRegistered = useRef(false);
+
+    const createVC = async (nonce: string) => {
+        if (nonce) {
+            const url = `http://52.158.36.185:8000/present-did`;
+            const ethrdid = await getEthrDID();
+            axios.post(url, { nonce: nonce, did: ethrdid.did, data: {} }, {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+                .then(async response => {
+                    const vc = response.data.vc;
+                    setVC(decodeJWT(vc).payload)
+                    const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, chainId: chainNameOrId, registry }));
+
+                    const verifiedVC = await verifyCredential(vc, didResolver);
+                    console.log('Verified VC:', verifiedVC);
+
+                })
+                .catch(error => {
+                    console.error('Error sending nonce:', error);
+                });
+        }
+
+    }
 
     useEffect(() => {
         if (permission?.canAskAgain || permission?.status === "undetermined") {
@@ -66,7 +63,6 @@ export default function ScanScreen() {
         hasScannerRegistered.current = true;
 
         const onBarcodeScanned = async (data: ScanningResult) => {
-            console.log("???/")
             CameraView.dismissScanner();
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             setModalVisible(true);
@@ -81,6 +77,8 @@ export default function ScanScreen() {
                     break;
                 case "createVC":
                     const nonce = parsedData.nonce;
+                    const vc = await createVC(nonce);
+                    console.log("VC:", vc)
                     console.log("create VC,", nonce);
                     break;
                 default:

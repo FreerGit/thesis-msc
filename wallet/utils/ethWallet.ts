@@ -50,18 +50,20 @@ export const fetchKeypair = async (): Promise<ethers.Wallet | null> => {
   }
 };
 
+export const getEthrDID = async () => {
+  const wallet = await fetchKeypair();
+  return new EthrDID({
+    identifier: wallet!.address,
+    privateKey: wallet!.privateKey,
+    provider,
+    chainNameOrId,
+    registry
+  })
+}
+
 export const resolveDidDoc = async () => {
   try {
-    const wallet = await fetchKeypair();
-
-    console.log("key", wallet)
-    let did = new EthrDID({
-      identifier: wallet!.address,
-      privateKey: wallet!.privateKey,
-      provider,
-      chainNameOrId,
-      registry
-    })
+    const did = await getEthrDID();
     console.log("DID:", did)
     const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: chainNameOrId, chainId: 11155111, registry }));
     const didDocument = (await didResolver.resolve(did.did)).didDocument

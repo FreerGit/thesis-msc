@@ -69,25 +69,43 @@ const generateVC = async (issuer: EthrDID, wallet: string) => {
 }
 
 app.post('/present-did', async (req, res) => {
-    const { nonce, did, data } = req.body; // did -> wallet did
-    console.log(`Received nonce via HTTP: ${nonce}`);
-    if (nonceToConnectionMap.has(nonce)) {
-        const ws = nonceToConnectionMap.get(nonce);
-        ws.send(JSON.stringify({ message: "Data from server", data }))
-        const vc = await generateVC(issuerDID, did)
-        const response = {
-            title: "A VC shared by QR code",
-            vc: vc,
-        };
-        res.status(200).send(JSON.stringify(response));
-    } else {
-        res.status(404).send('Nonce not found!');
+    try {
+
+        const { nonce, did, data } = req.body; // did -> wallet did
+        console.log(`Received nonce via HTTP: ${nonce}`);
+        if (nonceToConnectionMap.has(nonce)) {
+            const ws = nonceToConnectionMap.get(nonce);
+            ws.send(JSON.stringify({ message: "Data from server", data }))
+            const vc = await generateVC(issuerDID, did)
+            const response = {
+                title: "A VC shared by QR code",
+                vc: vc,
+            };
+            res.status(200).send(JSON.stringify(response));
+        } else {
+            res.status(404).send('Nonce not found!');
+        }
+    } catch (e) {
+        console.error("Could not create VC:", e)
     }
 });
 
 wss.on("connection", (ws) => {
     console.log("Client connected");
 
+    ws.on("message", (message) => {
+        const { nonce } = JSON.parse(message.toString());
+        console.log("Received nonce:", nonce);
+
+        nonceToConnectionMap.set(nonce, ws);
+
+        ws.send(JSON.stringify({ message: "Nonce received successfully!" }));
+    });
+
+    ws.on("close", () => {
+        nonceToConnectionMap.clear();
+        console.log("Client disconnected");
+    });
 });
 
 wss.on("close", () => {
