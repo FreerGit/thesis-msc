@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Modal, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Modal, Pressable, ScrollView } from 'react-native';
 import { CameraView, useCameraPermissions, BarcodeScanningResult, Camera, ScanningResult } from "expo-camera"
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as Haptics from "expo-haptics"
@@ -70,6 +70,8 @@ export default function ScanScreen() {
 
             console.log(data)
             const parsedData = JSON.parse(data.data);
+
+            setVC(parsedData);
             console.log(parsedData)
             switch (parsedData.type) {
                 case "VerifierChallenge":
@@ -121,7 +123,7 @@ export default function ScanScreen() {
 
     const handleSaveVC = async () => {
         console.log(vc)
-        saveVC(vc, vc["vc"]["credentialSubject"]["id"]);
+        // saveVC(vc, vc["vc"]["credentialSubject"]["id"]);
 
         handleModalClose()
     }
@@ -140,36 +142,36 @@ export default function ScanScreen() {
                     </Button>
                 </View>
 
-                <Modal
-                    visible={modalVisible}
-                    animationType="slide"
-                    transparent={true}
-                >
-                    <BlurView
-                        intensity={20}
-                        tint='light'
-                        style={{ flex: 1, paddingTop: 50 }}
-                    >
-                        <View style={styles.modalContainer}>
-                            <Text style={{ color: "white" }}>
-                                {JSON.stringify(vc)}
-                            </Text>
-                            <View style={styles.buttons}>
-                                <Button
-                                    title="Cancel"
-                                    onPress={() => handleModalClose()}
-                                >
-                                </Button>
-                                <Button
-                                    title="Save"
-                                    onPress={() => handleSaveVC()}
-                                >
-                                </Button>
-                            </View>
-                        </View>
-                    </BlurView>
-                </Modal>
             </View >
+            <Modal
+                visible={modalVisible}
+                animationType="slide"
+                transparent={true}
+            >
+                <BlurView
+                    intensity={20}
+                    tint='light'
+                    style={{ flex: 1, paddingTop: 50 }}
+                >
+                    <ScrollView style={styles.modalContainer} contentContainerStyle={styles.modalContentContainer}>
+                        <Text style={{ color: "white" }}>
+                            {JSON.stringify(vc, null, 2)}
+                        </Text>
+                        <View style={styles.buttons}>
+                            <Button
+                                title="Cancel"
+                                onPress={() => handleModalClose()}
+                            >
+                            </Button>
+                            <Button
+                                title="Save"
+                                onPress={() => handleSaveVC()}
+                            >
+                            </Button>
+                        </View>
+                    </ScrollView>
+                </BlurView>
+            </Modal>
         </LinearGradient>
     )
 }
@@ -183,6 +185,9 @@ const styles = StyleSheet.create({
 
     modalContainer: {
         flex: 1,
+    },
+
+    modalContentContainer: {
         alignItems: 'center',
         borderRadius: 10,
         padding: 20,
