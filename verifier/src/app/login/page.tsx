@@ -12,19 +12,43 @@ interface TrustedIssuer {
     name: string;
 }
 
+interface SessionID {
+    sessionId: string;
+}
+
+async function fetchTrustedIssuers() {
+    const response = await fetch("/api/trustedIssuers");
+    if (!response.ok) {
+        throw new Error("Failed to fetch trusted issuers");
+    }
+    const data: TrustedIssuer[] = await response.json();
+    return data;
+}
+
+async function fetchSessionID() {
+    const response = await fetch("/api/auth/status");
+    if (!response.ok) {
+        throw new Error("Failed to get session ID");
+    }
+    const data: SessionID = await response.json();
+    return data
+}
+
+function startStatusPolling() {
+
+}
+
 export default function LoginPage() {
     const router = useRouter();
+    const [sessionId, setSessionId] = useState<string | null>(null);
     const [presentationRequest, setPresentationRequest] = useState({});
 
     useEffect(() => {
-        async function fetchTrustedIssuers() {
-            const response = await fetch("/api/trustedIssuers");
-            if (!response.ok) {
-                throw new Error("Failed to fetch trusted issuers");
-            }
-            const data: TrustedIssuer[] = await response.json();
-            return data;
-        }
+
+
+        fetchSessionID().then(data => setSessionId(data.sessionId));
+        fetchSessionID().then(data => console.log(data.sessionId));
+
 
         const createPresentationRequest = async () => {
             const issuers = await fetchTrustedIssuers();
@@ -82,6 +106,22 @@ export default function LoginPage() {
         createPresentationRequest()
     }, [])
 
+
+    useEffect(() => {
+        if (!sessionId) return;
+
+        const interval = setInterval(() => {
+            fetch(`/api/auth/status?session=${sessionId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "authenticated") {
+                        clearInterval(interval);
+                    }
+                });
+        }, 3000);
+
+        return () => clearInterval(interval); // cleanup on unmount
+    }, [sessionId]);
 
     /*
         This challenge will need to include the list of trusted issuers,
@@ -143,12 +183,19 @@ export default function LoginPage() {
                     <p className="text-2xl">Generating QR code...</p>
                 )
             }
+
             <button
                 className="bg-blue-500 hover:bg-blue-700 cursor-pointer text-white font-bold py-2 px-4 rounded"
                 onClick={() => handleLogin()}
             >
                 Login
             </button>
+
+            {/* Fredriks version */}
+            <QRCodeSVG
+                value={"fdafdsfsafdfsaf"}
+                size={400}
+            ></QRCodeSVG>
         </div>
     )
 }

@@ -1,6 +1,101 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Verifier
+The authentication flow behaves similar to [BankID](https://www.bankid.com/).
+
+## 🔐 Secure DID Auth Flow (Cross-Device via QR)
+
+### 🧩 On Page Load (PC)
+
+- 🔑 Server generates a **random session ID** (e.g., UUIDv4)
+- 🗂 Stores session with `status = pending`
+- 📦 Returns session ID to frontend (via template, JSON, or embedded JS)
+- 📷 Frontend shows a QR code linking to:
+
+  ```
+  https://example.com/auth/receive?session=abc123
+  ```
+
+- 🔁 Frontend starts polling:
+
+  ```http
+  GET /auth/status?session=abc123
+  ```
+
+  every few seconds
+
+---
+
+### 📲 On Mobile Wallet
+
+- Scans QR code and extracts `session=abc123`
+- Creates and signs a **Verifiable Presentation (VP)** with:
+  - `challenge = abc123` (or a nonce tied to session)
+  - `domain = did:web:verifier.com` (or similar)
+- Sends the VP to the verifier:
+
+  ```http
+  POST /auth/receive?session=abc123
+  Content-Type: application/json
+
+  {
+    "vp": { ... }
+  }
+  ```
+
+---
+
+### 🧠 On Server – `/auth/receive`
+
+- Verifies the VP:
+  - Signature
+  - Challenge matches session
+  - Audience/domain matches verifier
+- If valid:
+  - Updates session: `status = authenticated`
+  - Optionally stores user DID with session
+
+---
+
+### 🔁 On Server – `/auth/status`
+
+- Validates session ID format (e.g., UUID)
+- Always returns a generic response:
+
+  ```json
+  { "status": "pending" }
+  ```
+
+  or
+
+  ```json
+  { "status": "authenticated" }
+  ```
+
+- Never leak user data or session validity details
+- Expires sessions after a short duration (e.g., 2–5 minutes)
+- Applies rate limiting per IP (e.g., max 10 requests/minute)
+
+---
+
+### 🌐 On Frontend (Polling Response)
+
+- If `status === "authenticated"`:
+  - Set a session cookie or redirect to a logged-in page
+- If `status === "pending"`:
+  - Continue polling
+
+---
+
+### ✅ Security Summary
+
+- Use **unguessable session IDs** (e.g., UUIDv4 or 128-bit random)
+- Return **only generic status** from polling
+- Enforce **short session expiration**
+- Apply **IP-based rate limiting**
+- **Set session cookie** only after verifying the VP
+
 
 ## Getting Started
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 First, run the development server:
 
