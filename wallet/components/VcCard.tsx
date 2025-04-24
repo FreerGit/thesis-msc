@@ -1,20 +1,22 @@
 import { View, Text, StyleSheet, Pressable } from "react-native"
 import { Image } from "expo-image"
+import { useEffect } from "react";
 
 interface VcCardProps {
     vc: any,
     title: string,
-    onVcPress: (vc: any) => void,
+    filePath: string,
+    onVcPress: (vc: any, filePath: string) => void,
 }
 
-export default function VcCard({ title, vc, onVcPress }: VcCardProps) {
+export default function VcCard({ title, vc, filePath, onVcPress }: VcCardProps) {
     const blurhash =
         '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
 
 
     return (
         <Pressable
-            onPress={() => onVcPress(vc)}
+            onPress={() => onVcPress(vc, filePath)}
             style={({ pressed }) => [
                 {
                     opacity: pressed ? 0.5 : 1,
@@ -27,7 +29,7 @@ export default function VcCard({ title, vc, onVcPress }: VcCardProps) {
                 <View style={styles.titleRow}>
                     <Image
                         style={styles.image}
-                        source={vc.issuer.imgUrl}
+                        source={vc?.issuer?.imgUrl ?? require("../assets/images/icon.png")}
                         placeholder={{ blurhash }}
                         contentFit="cover"
                         transition={1000}
@@ -37,12 +39,12 @@ export default function VcCard({ title, vc, onVcPress }: VcCardProps) {
                         <Text style={styles.vcTitle}>
                             {title}
                         </Text>
-                        {/* <Text style={styles.text}>
-                            {vc.credentialSubject.name}
-                        </Text> */}
-                        {/* <Text style={styles.text}>
-                            {vc.issuer.name}
-                        </Text> */}
+                        <Text style={styles.text}>
+                            {vc?.credentialSubject.name}
+                        </Text>
+                        <Text style={styles.text}>
+                            {vc?.issuer.id}
+                        </Text>
                     </View>
                 </View>
 
@@ -51,17 +53,12 @@ export default function VcCard({ title, vc, onVcPress }: VcCardProps) {
                         <Text style={{ fontWeight: "bold" }}>
                             Issuer: {" "}
                         </Text>
-                        {vc.issuer}
+                        {vc?.issuer.id}
                     </Text>
                     <Text style={styles.text}>
                         <Text style={{ fontWeight: "bold" }}>
                             Date issued: {" "}
                         </Text>
-                        {new Date(vc.issuanceDate).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                        })}
                     </Text>
 
                     <Text style={styles.text}>

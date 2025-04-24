@@ -29,7 +29,6 @@ export default function ProfileScreen() {
             setBalance(bal.toString())
         }
 
-        console.log("fetchDid")
         fetchDid();
         getEthBalance();
     }, []);
@@ -53,13 +52,13 @@ export default function ProfileScreen() {
                         }} />
                     </View>
                     <MotiView style={{ flex: 1, gap: 5 }}>
-                        <Skeleton.Group show={Object.keys(resolvedDid).length === 0}>
+                        <Skeleton.Group show={Object.keys(resolvedDid ?? {}).length === 0}>
                             <Skeleton>
                                 <Text style={[styles.header, { marginTop: 0 }]}>Decentralized Identifier</Text>
                             </Skeleton>
                             <Skeleton width={"100%"} height={500}>
                                 <View style={styles.entryView}>
-                                    {
+                                    {resolvedDid &&
                                         Object.entries(resolvedDid).map(([key, value]) => {
                                             return (
                                                 <View style={styles.entry} key={key}>
@@ -128,7 +127,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         padding: 5,
-        backgroundColor: "rgba(144, 144, 144, 0.1)",
+        backgroundColor: "rgba(144, 144, 144, 0.2)",
         borderRadius: 5,
         width: "100%",
     },

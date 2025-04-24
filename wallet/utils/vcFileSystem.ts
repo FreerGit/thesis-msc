@@ -13,13 +13,14 @@ export const saveVC = async (vc, filename) => {
         var count = 0;
         for (const name of fileNames) {
             const split = name.split("@@");
-            if (split[0] == vc["vc"]["credentialSubject"]["id"]) {
+            if (split[0] == vc["issuer"]["id"]) {
                 count += 1;
             }
         }
         const filePath = `${vcDirectory}${filename}@@${count}.json`;
-        await FileSystem.writeAsStringAsync(filePath, JSON.stringify(vc));
+        await FileSystem.writeAsStringAsync(filePath, JSON.stringify({ "vc": vc, "title": "Example credential" }));
 
+        console.log("VC saved at:", filePath);
         return filePath;
     } catch (error) {
         console.error('Error saving VC:', error);
@@ -53,6 +54,8 @@ export const listAllVCs = async () => {
 
         const files = await FileSystem.readDirectoryAsync(vcDirectory);
         const results = [];
+
+        console.log("Files in VC directory:", files);
 
         for (const file of files) {
             const filePath = `${vcDirectory}${file}`;

@@ -15,17 +15,24 @@ import { getResolver } from 'ethr-did-resolver'
 import { Resolver } from 'did-resolver'
 import { VC_ERROR, verifyCredential, verifyPresentation } from 'did-jwt-vc'
 import Constants from 'expo-constants'
+import WalletModal from '@/components/WalletModal';
+import SaveCredentialView from '@/components/SaveVC';
+import PresentationRequest from '@/components/PresentationRequest';
 
 const chainNameOrId = "sepolia"
 const RPC_URL = `https://rpc.ankr.com/eth_sepolia/${Constants.expoConfig?.extra?.ANKR_API_KEY}`
-const registry = "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818" // the smart contract addr for registry
+const registry = "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818"
+
+enum QRCodeType {
+    VerifierChallenge = "VerifierChallenge",
+    createVC = "createVC",
+}
 
 export default function ScanScreen() {
-
     const tabBarHeight = useBottomTabBarHeight();
     const [permission, requestPermission] = useCameraPermissions();
     const [modalVisible, setModalVisible] = useState(false);
-    const [data, setData] = useState<ScanningResult | null>(null);
+    const [scannedData, setScannedData] = useState(null);
     const [vc, setVC] = useState({});
     const hasScannerRegistered = useRef(false);
 
@@ -33,6 +40,7 @@ export default function ScanScreen() {
         if (nonce) {
             const url = `http://52.158.36.185:8000/present-did`;
             const ethrdid = await getEthrDID();
+
             axios.post(url, { nonce: nonce, did: ethrdid.did, data: {} }, {
                 headers: {
                     "Content-Type": "application/json",
@@ -40,12 +48,9 @@ export default function ScanScreen() {
             })
                 .then(async response => {
                     const vc = response.data.vc;
-                    setVC(decodeJWT(vc).payload.vc)
                     const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: chainNameOrId, chainId: 11155111, registry }));
-                    // console.log("VC", vc)
                     const verifiedVC = await verifyCredential(vc, didResolver);
-                    console.log('Verified VC:', verifiedVC);
-
+                    setVC(verifiedVC.verifiableCredential);
                 })
                 .catch(error => {
                     console.error('Error sending nonce:', error);
@@ -66,25 +71,21 @@ export default function ScanScreen() {
             CameraView.dismissScanner();
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             setModalVisible(true);
-            setData(data);
-
-            console.log(data)
             const parsedData = JSON.parse(data.data);
+            setScannedData(parsedData);
 
-            setVC(parsedData);
-            console.log(parsedData)
+
             switch (parsedData.type) {
-                case "VerifierChallenge":
+                case QRCodeType.VerifierChallenge:
                     console.log("VerifierChallenge QR code scanned");
+                    setVC(parsedData);
                     break;
-                case "createVC":
+                case QRCodeType.createVC:
                     const nonce = parsedData.nonce;
-                    const vc = await createVC(nonce);
-                    console.log("VC:", vc)
-                    console.log("create VC,", nonce);
+                    await createVC(nonce);
                     break;
                 default:
-                    console.log("Unknown QR code scanned");
+                    console.log("Unknown QR code scanned", parsedData.type);
                     break;
             }
 
@@ -122,8 +123,8 @@ export default function ScanScreen() {
     }
 
     const handleSaveVC = async () => {
-        console.log(vc)
-        // saveVC(vc, vc["vc"]["credentialSubject"]["id"]);
+
+        await saveVC(vc, vc.issuer.id);
 
         handleModalClose()
     }
@@ -143,35 +144,28 @@ export default function ScanScreen() {
                 </View>
 
             </View >
-            <Modal
-                visible={modalVisible}
-                animationType="slide"
-                transparent={true}
+            <WalletModal
+                modalVisible={modalVisible}
+                handleModalClose={handleModalClose}
+                modalTitle={scannedData?.type === QRCodeType.createVC ? "Save Credential" : "Presentation Request"}
             >
-                <BlurView
-                    intensity={20}
-                    tint='light'
-                    style={{ flex: 1, paddingTop: 50 }}
-                >
-                    <ScrollView style={styles.modalContainer} contentContainerStyle={styles.modalContentContainer}>
-                        <Text style={{ color: "white" }}>
-                            {JSON.stringify(vc, null, 2)}
-                        </Text>
-                        <View style={styles.buttons}>
-                            <Button
-                                title="Cancel"
-                                onPress={() => handleModalClose()}
-                            >
-                            </Button>
-                            <Button
-                                title="Save"
-                                onPress={() => handleSaveVC()}
-                            >
-                            </Button>
-                        </View>
-                    </ScrollView>
-                </BlurView>
-            </Modal>
+                {
+                    scannedData?.type === QRCodeType.createVC &&
+                    <SaveCredentialView
+                        onSave={handleSaveVC}
+                        onCancel={handleModalClose}
+                        credential={vc}
+                    />
+                }
+                {
+                    scannedData?.type === QRCodeType.VerifierChallenge &&
+                    <PresentationRequest
+                        onDecline={handleModalClose}
+                        onAccept={handleModalClose}
+                        presentationRequest={scannedData}
+                    />
+                }
+            </WalletModal>
         </LinearGradient>
     )
 }
@@ -181,17 +175,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         gap: 10,
-    },
-
-    modalContainer: {
-        flex: 1,
-    },
-
-    modalContentContainer: {
-        alignItems: 'center',
-        borderRadius: 10,
-        padding: 20,
-        backgroundColor: '#333'
     },
 
     cameraView: {
@@ -206,15 +189,15 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
 
-    buttons: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        gap: 10,
-    },
-
     text: {
         fontSize: 50,
         color: '#fff',
         fontWeight: 'bold',
-    }
+    },
+
+    buttons: {
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        gap: 10,
+    },
 })

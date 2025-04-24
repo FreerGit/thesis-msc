@@ -13,6 +13,10 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import VcModal from "@/components/VcModal";
 import { LinearGradient } from "expo-linear-gradient";
 import { listAllVCs } from "@/utils/vcFileSystem";
+import WalletModal from "@/components/WalletModal";
+import * as Filesystem from "expo-file-system";
+import CredentialView from "@/components/CredentialView";
+import { deleteVC } from "@/utils/vcFileSystem";
 
 
 export default function WalletScreen() {
@@ -20,27 +24,41 @@ export default function WalletScreen() {
     const [loading, setLoading] = useState(true);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedVc, setSelectedVc] = useState<any | null>(null);
+    const [filePath, setFilePath] = useState<string | null>(null);
 
     const tabBarHeight = useBottomTabBarHeight();
 
     useEffect(() => {
         const getVcList = async () => {
             const vcs = await listAllVCs();
-            console.log(vcs);
             setSavedVcList(vcs);
             setLoading(false);
         }
         getVcList()
     }, [])
 
-    const handleVcPress = (vc: any) => {
+    const handleVcPress = (vc: any, filePath: string) => {
         setSelectedVc(vc);
+        setFilePath(filePath);
         setModalVisible(true);
     }
 
     const closeModal = () => {
-        setSelectedVc(null);
         setModalVisible(false);
+        setSelectedVc(null);
+    }
+
+    const deleteCredential = async (filePath: string) => {
+        try {
+            const fileInfo = await Filesystem.getInfoAsync(filePath);
+            if (!fileInfo.exists) {
+                throw new Error("File does not exist");
+            }
+            await deleteVC(filePath);
+            setSavedVcList((prevList) => prevList.filter((vc) => vc.path !== filePath));
+        } catch (error) {
+            console.error("Error deleting VC:", error);
+        }
     }
 
     return (
@@ -54,7 +72,7 @@ export default function WalletScreen() {
                             {
                                 savedVCList.map((savedVC, index) => {
                                     return (
-                                        <VcCard key={index} title={savedVC["title"]} vc={savedVC["vc"]} onVcPress={handleVcPress} />
+                                        <VcCard key={index} title={savedVC["title"]} vc={savedVC["vc"]} filePath={savedVC["path"]} onVcPress={handleVcPress} />
                                     )
                                 })
                             }
@@ -62,11 +80,18 @@ export default function WalletScreen() {
                     }
                 </View>
 
-                <VcModal
-                    vc={selectedVc}
+                <WalletModal
                     modalVisible={modalVisible}
-                    closeModal={closeModal}
-                ></VcModal>
+                    handleModalClose={closeModal}
+                    modalTitle="Credential"
+                >
+                    <CredentialView
+                        vc={selectedVc}
+                        filePath={filePath ?? ""}
+                        onClose={closeModal}
+                        deleteVC={deleteCredential}
+                    />
+                </WalletModal>
             </ScrollView >
         </LinearGradient>
     );

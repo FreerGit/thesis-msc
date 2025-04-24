@@ -4,7 +4,6 @@ import ModalHeader from './ModalHeader';
 import { PanGestureHandler, Gesture, State } from 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
 import { BlurView } from 'expo-blur';
-import { set } from '@project-serum/anchor/dist/cjs/utils/features';
 
 interface VcModalProps {
     vc: any;

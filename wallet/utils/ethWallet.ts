@@ -64,10 +64,8 @@ export const getEthrDID = async () => {
 export const resolveDidDoc = async () => {
   try {
     const did = await getEthrDID();
-    console.log("DID:", did)
     const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: chainNameOrId, chainId: 11155111, registry }));
     const didDocument = (await didResolver.resolve(did.did)).didDocument
-    console.log("DID:", didDocument)
     return didDocument
   } catch (e) {
     console.error("Error resolving did:", e);

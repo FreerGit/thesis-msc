@@ -8,9 +8,10 @@ interface ModalHeaderProps {
     translateY: Animated.Value,
     blurIntensity: number,
     setModalBackgroundBlur?: (intensity: number) => void,
+    title?: string,
 }
 
-export default function ModalHeader({ closeModal, translateY, blurIntensity, setModalBackgroundBlur }: ModalHeaderProps) {
+export default function ModalHeader({ closeModal, translateY, blurIntensity, setModalBackgroundBlur, title }: ModalHeaderProps) {
     const onGestureEvent = Animated.event(
         [{ nativeEvent: { translationY: translateY } }],
         { useNativeDriver: false }
@@ -52,7 +53,7 @@ export default function ModalHeader({ closeModal, translateY, blurIntensity, set
                 intensity={blurIntensity}
                 tint='dark'
             >
-                <Text style={[styles.modalTitle, { textAlign: 'center' }]}>VC Details</Text>
+                <Text style={[styles.modalTitle, { textAlign: 'center' }]}>{title ?? "VC Details"}</Text>
                 <View style={styles.closeButton}>
                     <Button
                         title='Close'

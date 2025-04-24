@@ -65,7 +65,8 @@ export default function LoginPage() {
             const presentationRequest = {
                 "type": "VerifierChallenge",
                 "challenge": randomChallenge,
-                "presentation_definition:": {
+                "domain": "example.com",
+                "presentation_definition": {
                     "id": "example_presentation_definition",
                     "input_descriptors": [
                         {
