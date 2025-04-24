@@ -38,7 +38,7 @@ export default function ScanScreen() {
 
     const createVC = async (nonce: string) => {
         if (nonce) {
-            const url = `http://52.158.36.185:8000/present-did`;
+            const url = `http://4.231.235.89:8000/present-did`;
             const ethrdid = await getEthrDID();
 
             axios.post(url, { nonce: nonce, did: ethrdid.did, data: {} }, {

@@ -1,23 +1,23 @@
+import { sessions } from "@/data/sessions";
 import { NextRequest, NextResponse } from "next/server";
-import { sessions } from "@/app/api/auth/status/route";
 
 
 export async function POST(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const sessionId = searchParams.get("session");
+    console.log('here')
+    const body = await req.json();
+    const vp = body.vp;
+    const sessionId = body.challenge;
 
     if (!sessionId || !sessions.has(sessionId)) {
         return NextResponse.json({ error: "Invalid session" }, { status: 400 });
     }
 
-    const body = await req.json();
-    const vp = body.vp;
 
     if (!vp || !vp.proof || vp.proof.challenge !== sessionId) {
         return NextResponse.json({ error: "Invalid VP or challenge mismatch" }, { status: 400 });
     }
 
-    // Optional: verify DID signature here (use DIDKit or your own verifier)
+    console.log("TODO: Verify VP")
 
     // Mark session as authenticated
     const session = sessions.get(sessionId)!;

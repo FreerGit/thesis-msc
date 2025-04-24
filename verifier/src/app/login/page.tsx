@@ -4,7 +4,7 @@ import NavBar from "@/components/NavBar";
 import { useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
-import { randomBytes } from "crypto";
+// import { randomBytes } from "crypto";
 
 interface TrustedIssuer {
     id: string;
@@ -34,9 +34,9 @@ async function fetchSessionID() {
     return data
 }
 
-function startStatusPolling() {
+// function startStatusPolling() {
 
-}
+// }
 
 export default function LoginPage() {
     const router = useRouter();
@@ -57,11 +57,11 @@ export default function LoginPage() {
                 return `^${issuer.did}$`;
             }).join("|");
 
-            const generateRandomChallenge = () => {
-                return `0x${randomBytes(32).toString("hex")}`;
-            };
+            // const generateRandomChallenge = () => {
+            //     return `0x${randomBytes(32).toString("hex")}`;
+            // };
 
-            const randomChallenge = generateRandomChallenge();
+            // const randomChallenge = generateRandomChallenge();
             const presentationRequest = {
                 "type": "VerifierChallenge",
                 "challenge": sessionId,
@@ -107,7 +107,7 @@ export default function LoginPage() {
             setPresentationRequest(presentationRequest);
         }
         createPresentationRequest()
-    }, [])
+    }, [sessionId])
 
 
     useEffect(() => {

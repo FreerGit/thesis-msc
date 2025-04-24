@@ -1,14 +1,13 @@
 // app/api/status/route.ts
 import { v4 as uuidv4 } from 'uuid';
 import { NextRequest, NextResponse } from 'next/server';
+import { sessions } from '@/data/sessions';
 
-// Simple in-memory session store (probably redis/db in prod)
-const sessions = new Map<string, { status: 'pending' | 'authenticated'; createdAt: number }>();
+
 
 export function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const sessionId = searchParams.get("session");
-    console.log(sessionId)
     // The case where the frontend is polling
     if (sessionId) {
         const session = sessions.get(sessionId);
@@ -45,4 +44,3 @@ export function GET(req: NextRequest) {
     return NextResponse.json({ sessionId: newSessionId });
 }
 
-export { sessions };

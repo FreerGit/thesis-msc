@@ -28,7 +28,7 @@ function App() {
 
 
   useEffect(() => {
-    const socket = new WebSocket("ws://52.158.36.185:8000");
+    const socket = new WebSocket("ws://4.231.235.89:8000");
     socket.onopen = () => {
       console.log("WebSocket connected, sending nonce...");
       socket.send(JSON.stringify({ nonce }));
