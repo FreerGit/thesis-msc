@@ -79,6 +79,7 @@ app.post('/present-did', async (req, res) => {
             const vc = await generateVC(issuerDID, did)
             const response = {
                 title: "A VC shared by QR code",
+                domain: "issuer.com",
                 vc: vc,
             };
             res.status(200).send(JSON.stringify(response));
