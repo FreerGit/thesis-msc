@@ -64,8 +64,10 @@ export default function LoginPage() {
             const randomChallenge = generateRandomChallenge();
             const presentationRequest = {
                 "type": "VerifierChallenge",
-                "challenge": randomChallenge,
+                "challenge": sessionId,
                 "domain": "example.com",
+                "endpoint": "localhost:3000/api/auth/recieve",
+
                 "presentation_definition": {
                     "id": "example_presentation_definition",
                     "input_descriptors": [
@@ -115,6 +117,7 @@ export default function LoginPage() {
             fetch(`/api/auth/status?session=${sessionId}`)
                 .then(res => res.json())
                 .then(data => {
+                    console.log(data.status)
                     if (data.status === "authenticated") {
                         clearInterval(interval);
                     }
