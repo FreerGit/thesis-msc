@@ -61,7 +61,7 @@ export default function LoginPage() {
                 type: "VerifierChallenge",
                 challenge: sessionId,
                 domain: "example.com",
-                endpoint: "localhost:3000/api/auth/recieve",
+                endpoint: "http://4.231.235.89:3000/api/auth/recieve",
                 presentation_definition: {
                     id: "example_presentation_definition",
                     input_descriptors: [
