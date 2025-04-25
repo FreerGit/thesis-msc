@@ -1,7 +1,8 @@
 import * as FileSystem from 'expo-file-system';
 
-export const saveVC = async (vc, filename) => {
+export const saveVC = async (vc, filename, vcJwt) => {
     try {
+        console.log("Saving VC:", vc, filename, vcJwt);
         const vcDirectory = `${FileSystem.documentDirectory}vcs/`;
         const dirInfo = await FileSystem.getInfoAsync(vcDirectory);
 
@@ -18,7 +19,7 @@ export const saveVC = async (vc, filename) => {
             }
         }
         const filePath = `${vcDirectory}${filename}@@${count}.json`;
-        await FileSystem.writeAsStringAsync(filePath, JSON.stringify({ "vc": vc, "title": "Example credential" }));
+        await FileSystem.writeAsStringAsync(filePath, JSON.stringify({ "vc": vc, "title": "Example credential", "vcJwt": vcJwt }));
 
         console.log("VC saved at:", filePath);
         return filePath;
@@ -55,8 +56,6 @@ export const listAllVCs = async () => {
         const files = await FileSystem.readDirectoryAsync(vcDirectory);
         const results = [];
 
-        console.log("Files in VC directory:", files);
-
         for (const file of files) {
             const filePath = `${vcDirectory}${file}`;
             try {
@@ -65,7 +64,8 @@ export const listAllVCs = async () => {
                 results.push({
                     title: savedVC["title"],
                     vc: savedVC["vc"],
-                    path: filePath
+                    path: filePath,
+                    vcJwt: savedVC["vcJwt"],
                 });
             } catch (err) {
                 console.error(`Error reading file ${file}:`, err);
@@ -78,6 +78,40 @@ export const listAllVCs = async () => {
         return [];
     }
 };
+
+export const findAllVCsByPresentationRequest = async (constraints: any[]) => {
+    try {
+        const vcs = await listAllVCs();
+
+        const results = vcs.filter(vc => {
+            return constraints.every(constraint => {
+                return constraint.path.some((path: string) => {
+                    const correctPath = path.replace(/^\$\./, "");
+                    const value = getValueByPath(vc.vc, correctPath);
+
+                    if (value) {
+                        console.log("Value:", value);
+                        console.log("Constraint:", constraint);
+                        console.log("Correct Path:", correctPath);
+                        console.log("Regex Pattern:", constraint.pattern);
+                        const regex = new RegExp(constraint.pattern);
+                        const match = regex.test(value);
+                        console.log("Match:", match);
+                        return match;
+                    }
+
+                    return false;
+                });
+            });
+        });
+
+        console.log("Filtered VCs:", JSON.stringify(results, null, 2));
+
+        return results;
+    } catch (error) {
+        console.error('Error finding VCs by presentation request:', error);
+    }
+}
 
 export const deleteVC = async (filePath) => {
     try {
@@ -92,4 +126,8 @@ export const deleteVC = async (filePath) => {
         console.error('Error deleting VC:', error);
         return false;
     }
+};
+
+const getValueByPath = (obj: any, path: string) => {
+    return path.split('.').reduce((acc, key) => acc && acc[key], obj);
 };

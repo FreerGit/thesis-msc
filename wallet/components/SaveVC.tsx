@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import Button from './Button';
 import TextBox from './TextBox';
+import { SymbolView } from 'expo-symbols';
 
 interface SaveCredentialViewProps {
     onSave: () => void;
@@ -29,13 +30,17 @@ export default function SaveCredentialView({ onSave, onCancel, credential }: Sav
             <View style={styles.buttons}>
                 <Button
                     title="Cancel"
+                    type="secondary"
                     onPress={() => onCancel()}
                 >
+                    <SymbolView name='clear' tintColor={"white"} size={25}></SymbolView>
                 </Button>
                 <Button
                     title="Save"
+                    type="primary"
                     onPress={() => onSave()}
                 >
+                    <SymbolView name='square.and.arrow.down' tintColor={"#007AFF"} size={25}></SymbolView>
                 </Button>
             </View>
         </View>

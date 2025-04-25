@@ -34,6 +34,7 @@ export default function ScanScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [scannedData, setScannedData] = useState(null);
     const [vc, setVC] = useState({});
+    const [vcJwt, setVCJwt] = useState("");
     const hasScannerRegistered = useRef(false);
 
     const createVC = async (nonce: string) => {
@@ -41,20 +42,28 @@ export default function ScanScreen() {
             const url = `http://4.231.235.89:8000/present-did`;
             const ethrdid = await getEthrDID();
 
-            axios.post(url, { nonce: nonce, did: ethrdid.did, data: {} }, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then(async response => {
-                    const vc = response.data.vc;
-                    const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: chainNameOrId, chainId: 11155111, registry }));
-                    const verifiedVC = await verifyCredential(vc, didResolver);
-                    setVC(verifiedVC.verifiableCredential);
+            try {
+
+                axios.post(url, { nonce: nonce, did: ethrdid.did, data: {} }, {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 })
-                .catch(error => {
-                    console.error('Error sending nonce:', error);
-                });
+                    .then(async response => {
+                        const vc = response.data.vc;
+                        const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: chainNameOrId, chainId: 11155111, registry }));
+                        const verifiedVC = await verifyCredential(vc, didResolver);
+                        setVCJwt(vc);
+                        setVC(verifiedVC.verifiableCredential);
+                    })
+                    .catch(error => {
+                        console.error('Error sending nonce:', error);
+                    });
+            } catch (error) {
+                console.error("Error getting EthrDID", error);
+
+            }
+
         }
 
     }
@@ -81,6 +90,7 @@ export default function ScanScreen() {
                     setVC(parsedData);
                     break;
                 case QRCodeType.createVC:
+                    console.log("createVC QR code scanned");
                     const nonce = parsedData.nonce;
                     await createVC(nonce);
                     break;
@@ -120,11 +130,14 @@ export default function ScanScreen() {
 
     const handleModalClose = () => {
         setModalVisible(false);
+        setScannedData(null);
+        setVC({});
+        setVCJwt("");
     }
 
     const handleSaveVC = async () => {
 
-        await saveVC(vc, vc.issuer.id);
+        await saveVC(vc, vc.issuer.id, vcJwt);
 
         handleModalClose()
     }
@@ -160,8 +173,7 @@ export default function ScanScreen() {
                 {
                     scannedData?.type === QRCodeType.VerifierChallenge &&
                     <PresentationRequest
-                        onDecline={handleModalClose}
-                        onAccept={handleModalClose}
+                        closeOuterModal={handleModalClose}
                         presentationRequest={scannedData}
                     />
                 }

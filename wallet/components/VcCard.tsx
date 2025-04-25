@@ -29,8 +29,7 @@ export default function VcCard({ title, vc, filePath, onVcPress }: VcCardProps) 
                 <View style={styles.titleRow}>
                     <Image
                         style={styles.image}
-                        source={vc?.issuer?.imgUrl ?? require("../assets/images/icon.png")}
-                        placeholder={{ blurhash }}
+                        source={{ blurhash }}
                         contentFit="cover"
                         transition={1000}
                     />
