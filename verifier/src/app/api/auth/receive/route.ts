@@ -14,12 +14,12 @@ const registry = "0x03d5003bf0e79C5F5223588F347ebA39AfbC3818" // the smart contr
 
 const didResolver = new Resolver(getResolver({ rpcUrl: RPC_URL, name: "sepolia", chainId: 11155111, registry }));
 
-
 export async function POST(req: NextRequest) {
     console.log('here')
+
     const body = await req.json();
     const vp = body.vp;
-    const sessionId = body.challenge;
+    const sessionId = body.challenge
 
     if (!sessionId || !sessions.has(sessionId)) {
         return NextResponse.json({ error: "Invalid session" }, { status: 400 });
