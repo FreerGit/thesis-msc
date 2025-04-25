@@ -1,12 +1,13 @@
 import { Text, StyleSheet, ScrollView, View, Alert } from 'react-native';
 import Button from './Button';
 import TextBox from './TextBox';
+import { SymbolView } from 'expo-symbols';
 
 interface CredentialViewProps {
     vc: any,
     filePath?: string,
     onClose: () => void,
-    deleteVC: (filePath: string) => Promise<void>;
+    deleteVC?: (filePath: string) => Promise<void>;
 }
 
 export default function CredentialView({ vc, filePath, onClose, deleteVC }: CredentialViewProps) {
@@ -19,7 +20,9 @@ export default function CredentialView({ vc, filePath, onClose, deleteVC }: Cred
                 text: 'OK',
                 style: 'destructive',
                 onPress: async () => {
-                    await deleteVC(filePath!);
+                    if (deleteVC) {
+                        await deleteVC(filePath!);
+                    }
                     onClose();
                 }
             }
@@ -37,8 +40,17 @@ export default function CredentialView({ vc, filePath, onClose, deleteVC }: Cred
                     ></TextBox>
                 ))}
             <View style={styles.buttons}>
-                <Button title="Close" onPress={onClose} />
-                <Button title="Delete" onPress={() => handleDelete()}></Button>
+                <Button title="Close" type="secondary" onPress={onClose}>
+                    <SymbolView name='clear' tintColor={"white"} size={25}></SymbolView>
+                </Button>
+                {deleteVC &&
+                    <Button
+                        title="Delete"
+                        type="destructive"
+                        onPress={() => handleDelete()}
+                    >
+                        <SymbolView name='trash' tintColor={"red"} size={25}></SymbolView>
+                    </Button>}
             </View>
         </ScrollView>)
 }
