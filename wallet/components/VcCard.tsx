@@ -102,9 +102,9 @@ const styles = StyleSheet.create({
 
     image: {
         flex: 1,
-        height: 60,
-        minWidth: 60,
-        maxWidth: 60,
+        height: 75,
+        minWidth: 75,
+        maxWidth: 75,
         borderRadius: 10,
     },
 

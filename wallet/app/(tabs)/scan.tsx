@@ -150,6 +150,7 @@ export default function ScanScreen() {
                     <Button
                         title="Toggle scanning"
                         size='large'
+                        type="secondary"
                         onPress={() => onCameraReady()}
                     >
                         <SymbolView name='qrcode.viewfinder' tintColor={"white"} size={30}></SymbolView>

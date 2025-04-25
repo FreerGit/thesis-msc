@@ -46,7 +46,7 @@ export default function ProfileScreen() {
                     <Text style={styles.header}>Profile</Text>
                     <View style={{ flex: 1, gap: 5 }}>
                         <Text style={styles.text}>Account balance: {balance}</Text>
-                        <Button title="Remove Ethereum Key" onPress={async () => {
+                        <Button title="Remove Ethereum Key" type="secondary" onPress={async () => {
                             await deleteKeypair();
                             dispatch(setWalletExists(false));
                         }} />
@@ -75,6 +75,7 @@ export default function ProfileScreen() {
                     <Button
                         title="Lock wallet"
                         size="large"
+                        type="secondary"
                         onPress={async () => {
                             dispatch(setIsAuthenticated(false));
                         }}

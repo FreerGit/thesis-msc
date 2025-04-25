@@ -77,6 +77,7 @@ export default function PresentationRequest({ closeOuterModal, presentationReque
                     return vc.vcJwt;
                 }),
             },
+            "nonce": presentationRequest?.challenge,
         }
 
         const holder = {

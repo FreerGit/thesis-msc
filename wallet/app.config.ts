@@ -16,7 +16,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "slug": "Wallet",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/AppIcon~ios-marketing.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -44,15 +44,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "plugins": [
         "expo-router",
         [
-            "expo-splash-screen",
-            {
-                "image": "./assets/images/splash-icon.png",
-                "imageWidth": 200,
-                "resizeMode": "contain",
-                "backgroundColor": "#ffffff"
-            }
-        ],
-        [
             "expo-camera",
             {
                 "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
@@ -67,6 +58,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             "expo-local-authentication",
             {
                 "faceIDPermission": "Allow $(PRODUCT_NAME) to use Face ID."
+            }
+        ],
+        [
+            "expo-splash-screen",
+            {
+                "backgroundColor": "#333",
+                "image": "./assets/images/AppIcon~ios-marketing.png",
+                "imageWidth": 200,
             }
         ]
     ],
