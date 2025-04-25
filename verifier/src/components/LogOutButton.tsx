@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 export default function LogOutButton() {
     const router = useRouter();
 
-    const handleLogout = () => {
-        localStorage.removeItem("sessionToken");
+    const handleLogout = async () => {
+        await fetch("/api/logout");
         router.push("/");
     };
 
