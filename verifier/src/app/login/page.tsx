@@ -44,11 +44,11 @@ export default function LoginPage() {
     const [presentationRequest, setPresentationRequest] = useState({});
 
     useEffect(() => {
-
-
         fetchSessionID().then(data => setSessionId(data.sessionId));
-        fetchSessionID().then(data => console.log(data.sessionId));
+    }, []);
 
+    useEffect(() => {
+        if (!sessionId) return;
 
         const createPresentationRequest = async () => {
             const issuers = await fetchTrustedIssuers();
@@ -57,57 +57,54 @@ export default function LoginPage() {
                 return `^${issuer.did}$`;
             }).join("|");
 
-            // const generateRandomChallenge = () => {
-            //     return `0x${randomBytes(32).toString("hex")}`;
-            // };
-
-            // const randomChallenge = generateRandomChallenge();
             const presentationRequest = {
-                "type": "VerifierChallenge",
-                "challenge": sessionId,
-                "domain": "example.com",
-                "endpoint": "localhost:3000/api/auth/recieve",
-
-                "presentation_definition": {
-                    "id": "example_presentation_definition",
-                    "input_descriptors": [
+                type: "VerifierChallenge",
+                challenge: sessionId,
+                domain: "example.com",
+                endpoint: "localhost:3000/api/auth/recieve",
+                presentation_definition: {
+                    id: "example_presentation_definition",
+                    input_descriptors: [
                         {
-                            "id": "example_input_descriptor",
-                            "name": "Example Input Descriptor",
-                            "purpose": "This is an example input descriptor.",
-                            "constraints": {
-                                "fields": [
+                            id: "example_input_descriptor",
+                            name: "Example Input Descriptor",
+                            purpose: "This is an example input descriptor.",
+                            constraints: {
+                                fields: [
                                     {
-                                        "path": ["$.iss", "$.vc.issuer", "$.issuer"],
-                                        "filter": {
-                                            "type": "string",
-                                            "pattern": trustedIssuerPattern
-                                        }
+                                        path: ["$.iss", "$.vc.issuer", "$.issuer", "$.issuer.id"],
+                                        filter: {
+                                            type: "string",
+                                            pattern: trustedIssuerPattern,
+                                        },
                                     },
                                     {
-                                        "path": ["$.credentialSubject.degree.type"],
-                                        "filter": {
-                                            "type": "string",
-                                            "pattern": "^Bachelor.*$"
-                                        }
+                                        path: ["$.credentialSubject.degree.type"],
+                                        filter: {
+                                            type: "string",
+                                            pattern: "^Bachelor.*$",
+                                        },
                                     },
                                     {
-                                        "path": ["$.credentialSubject.degree.name"],
-                                        "filter": {
-                                            "type": "string",
-                                            "pattern": "^Bachelor of Science.*$"
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    ]
-                }
+                                        path: ["$.credentialSubject.degree.name"],
+                                        filter: {
+                                            type: "string",
+                                            pattern: "^Bachelor of Science.*$",
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                },
             };
+
             setPresentationRequest(presentationRequest);
-        }
-        createPresentationRequest()
-    }, [sessionId])
+        };
+
+        createPresentationRequest();
+    }, [sessionId]);
+
 
 
     useEffect(() => {
@@ -117,14 +114,14 @@ export default function LoginPage() {
             fetch(`/api/auth/status?session=${sessionId}`)
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data.status)
+                    console.log(data.status);
                     if (data.status === "authenticated") {
                         clearInterval(interval);
                     }
                 });
         }, 3000);
 
-        return () => clearInterval(interval); // cleanup on unmount
+        return () => clearInterval(interval); // cleanup
     }, [sessionId]);
 
     /*
