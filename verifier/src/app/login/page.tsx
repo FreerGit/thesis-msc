@@ -88,14 +88,14 @@ export default function LoginPage() {
                                         "path": ["$.credentialSubject.degree.type"],
                                         "filter": {
                                             "type": "string",
-                                            "pattern": "^Bachelor$"
+                                            "pattern": "^Bachelor.*$"
                                         }
                                     },
                                     {
                                         "path": ["$.credentialSubject.degree.name"],
                                         "filter": {
                                             "type": "string",
-                                            "pattern": "^Bachelor of Science$"
+                                            "pattern": "^Bachelor of Science.*$"
                                         }
                                     }
                                 ]
