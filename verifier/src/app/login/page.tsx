@@ -1,7 +1,7 @@
 "use client"
 
 import NavBar from "@/components/NavBar";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
 // import { randomBytes } from "crypto";
@@ -117,6 +117,7 @@ export default function LoginPage() {
                     console.log(data.status);
                     if (data.status === "authenticated") {
                         clearInterval(interval);
+                        redirect("/profile")
                     }
                 });
         }, 3000);
