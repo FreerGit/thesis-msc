@@ -13,13 +13,7 @@ app.use(express.json());
 
 const wss = new WebSocketServer({ noServer: true });
 
-// client connects, sends unique nonce
-// Wallet scans qr code to attain the nonce
-// Wallet sends http request with the data and nonce
-// Lookup in the map to find the associated connection to the nonce
-// Push the data acquired from the wallet
 const nonceToConnectionMap = new Map();
-// TODO: remove the entry on close (probably wont do this though)
 
 const keysEnv = dotenv.config({ path: "./.env" }).parsed!;
 const apiEnv = dotenv.config({ path: "./.env.api" }).parsed!;

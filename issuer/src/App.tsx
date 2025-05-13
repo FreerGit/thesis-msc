@@ -1,31 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { QRCodeSVG } from "qrcode.react";
-
-
 
 // Function to generate a UUID (v4)
 const generateNonce = () => crypto.randomUUID();
 
-
-
 function App() {
-  // const [keypair, setKeypair] = useState(undefined);
   const nonce = generateNonce();
-
-
-
-
-  // useEffect(() => {
-
-  //   const generateKeyPair = async () => {
-  //     return await verKey.Ed25519VerificationKey2020.generate();
-  //   }
-
-
-  //   generateKeyPair().then(kp => setKeypair(kp));
-  // }, [])
-
-
 
   useEffect(() => {
     const socket = new WebSocket("ws://4.231.235.89:8000");
@@ -33,16 +13,6 @@ function App() {
       console.log("WebSocket connected, sending nonce...");
       socket.send(JSON.stringify({ nonce }));
     };
-
-    // socket.onmessage = (event) => {
-    //   const { nonce, did } = JSON.parse(event.data)
-    //   console.log(nonce, did)
-    //   if (nonce && did) {
-    //     console.log(generateVC(keypair, did))
-
-    //   }
-    // };
-
 
     socket.onerror = (error) => {
       console.error("WebSocket error:", error);
