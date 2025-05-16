@@ -9,10 +9,14 @@ export default function ProfilePage() {
     const router = useRouter();
 
     useEffect(() => {
-        const sessionToken = localStorage.getItem("sessionToken");
-        if (!sessionToken) {
-            router.push("/");
-        }
+        const checkAuth = async () => {
+            const res = await fetch("/api/auth/check");
+            if (res.status !== 200) {
+                router.push("/");
+            }
+        };
+
+        checkAuth();
     }, []);
 
     return (

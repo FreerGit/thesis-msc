@@ -192,12 +192,6 @@ export default function LoginPage() {
             >
                 Login
             </button>
-
-            {/* Fredriks version */}
-            <QRCodeSVG
-                value={"fdafdsfsafdfsaf"}
-                size={400}
-            ></QRCodeSVG>
         </div>
     )
 }
