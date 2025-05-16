@@ -10,10 +10,10 @@ export function GET(req: NextRequest) {
         const session = sessions.get(sessionId);
 
         if (session && session.status === "authenticated") {
-            return NextResponse.next({ status: 200 });
+            return NextResponse.json({ status: 200 });
         }
 
     }
-    return NextResponse.next({ status: 401 });
+    return NextResponse.json({ status: 401 });
 }
 
