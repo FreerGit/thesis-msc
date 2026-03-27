@@ -25,7 +25,7 @@
     "@reduxjs/toolkit": "^2.8.1",
     "@scure/base": "^1.2.5",
     "assert": "^2.1.0",
-    "axios": "^1.9.0",
+    "axios": "^1.13.5",
     "did-jwt": "^8.0.14",
     "did-jwt-vc": "^4.0.12",
     "did-resolver": "^4.1.0",
